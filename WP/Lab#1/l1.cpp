@@ -17,6 +17,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		/*	Window is being created*/
 		case WM_CREATE:
+		    CreateWindowEx(
+               WS_EX_CLIENTEDGE,
+              TEXT("EDIT"),
+              TEXT("0"),
+              WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_AUTOVSCROLL|ES_AUTOHSCROLL,
+              50,
+              50,
+              100,
+              50,
+              hwnd,
+              (HMENU) 10,
+              GetModuleHandle(NULL),
+              NULL
+            );
 			return 0;
 			break;
 		/*	Window is closing*/
@@ -101,4 +115,5 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	}
 	return msg.wParam;
 }
+
 
