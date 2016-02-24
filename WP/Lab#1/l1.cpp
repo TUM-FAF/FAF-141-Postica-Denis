@@ -41,7 +41,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nShow
 	HWND hWnd=CreateWindowEx(NULL,
 			"Window Class",
 			"Windows application for lab#1",
-			WS_OVERLAPPEDWINDOW,
+			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 			200,
 			200,
 			600,
@@ -78,8 +78,11 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nShow
 LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
     PAINTSTRUCT paintStruct;
+    static char szSubmitBuffer[512];
+    const char * szMove = "MOVE";
     char string[] = "Done with Pride and Prejudice by Postica Denis";
     HDC hDC;
+    HFONT hfont;
 	switch(msg)
 	{
 		case WM_CREATE:
@@ -134,7 +137,7 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 				NULL);
             HWND hChB=CreateWindowEx(NULL,
 				"BUTTON",
-				"Change background",
+				"Calibri",
 				WS_TABSTOP|WS_VISIBLE|
 				WS_CHILD|BS_DEFPUSHBUTTON,
 				420,
@@ -147,7 +150,7 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 				NULL);
             HWND hChF=CreateWindowEx(NULL,
 				"BUTTON",
-				"Change font",
+				"Courier New",
 				WS_TABSTOP|WS_VISIBLE|
 				WS_CHILD|BS_DEFPUSHBUTTON,
 				420,
@@ -212,67 +215,48 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
             {
 				case IDC_OKB:
 				{
-					char buffer[256];
 					SendMessage(hEdit,
 						WM_GETTEXT,
-						sizeof(buffer)/sizeof(buffer[0]),
-						reinterpret_cast<LPARAM>(buffer));
-					MessageBox(NULL,
-						buffer,
-						"Information",
-						MB_ICONINFORMATION);
+						sizeof(szSubmitBuffer)/sizeof(szSubmitBuffer[0]),
+						reinterpret_cast<LPARAM>(szSubmitBuffer));
+
+					if (MessageBox(NULL,
+							TEXT("Accept text?"),
+							TEXT("Submission"),
+							MB_YESNO | MB_DEFBUTTON1 | MB_ICONWARNING) == IDYES) {
+						SendMessage(hTextOut, WM_SETTEXT, 0, (LPARAM)szSubmitBuffer);
+					};
+
+					if ( strcmp(szMove, szSubmitBuffer) == 0 )
+					{
+						ShowWindow(hWnd, SW_MAXIMIZE);
+					}
 				}
 				break;
 				case IDC_ChB:
 				{
-					char buffer[256];
-					SendMessage(hEdit,
-						WM_GETTEXT,
-						sizeof(buffer)/sizeof(buffer[0]),
-						reinterpret_cast<LPARAM>(buffer));
-					MessageBox(NULL,
-						buffer,
-						"Information",
-						MB_ICONINFORMATION);
+					hfont = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, TEXT("Calibri"));
+                        SendMessage(hTextOut, WM_SETFONT, (WPARAM)hfont, 1);
 				}
 				break;
 				case IDC_ChC:
 				{
-					char buffer[256];
-					SendMessage(hEdit,
-						WM_GETTEXT,
-						sizeof(buffer)/sizeof(buffer[0]),
-						reinterpret_cast<LPARAM>(buffer));
-					MessageBox(NULL,
-						buffer,
-						"Information",
-						MB_ICONINFORMATION);
+					hfont = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, TEXT("Calibri"));
+                        SendMessage(hTextOut, WM_SETFONT, (WPARAM)hfont, 1);
 				}
 				break;
 				case IDC_ChF:
 				{
-					char buffer[256];
-					SendMessage(hEdit,
-						WM_GETTEXT,
-						sizeof(buffer)/sizeof(buffer[0]),
-						reinterpret_cast<LPARAM>(buffer));
-					MessageBox(NULL,
-						buffer,
-						"Information",
-						MB_ICONINFORMATION);
+					hfont = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, TEXT("Courier New"));
+                        SendMessage(hTextOut, WM_SETFONT, (WPARAM)hfont, 1);
 				}
 				break;
 				case IDC_Exit:
 				{
-					char buffer[256];
-					SendMessage(hEdit,
-						WM_GETTEXT,
-						sizeof(buffer)/sizeof(buffer[0]),
-						reinterpret_cast<LPARAM>(buffer));
-					MessageBox(NULL,
-						buffer,
-						"Information",
-						MB_ICONINFORMATION);
+					if (MessageBox(NULL, TEXT("Are you sure you want to exit?"), TEXT("Exit?"),MB_YESNO | MB_DEFBUTTON2 | MB_ICONWARNING) == IDYES) {
+                    SendMessage(hWnd, WM_DESTROY, 0, 0);
+
+                    };
 				}
 				break;
 			}
