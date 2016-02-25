@@ -1,10 +1,9 @@
-Windows Programming Laboratory Work #1
+                                                    Windows Programming Laboratory Work #1
 
-Title
 
 Window. Window handling. Basic window’s form elements
 
-Contents
+Contents:
 
 1. Win32 API
 2. GIT
