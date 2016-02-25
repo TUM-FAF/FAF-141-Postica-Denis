@@ -1,12 +1,13 @@
 #include <windows.h>
+#include <stdio.h>
 
 #define IDC_EDIT	    101
 #define IDC_OKB	        102
-#define IDC_ChC	        103
 #define IDC_ChB	        104
 #define IDC_ChF	        105
 #define IDC_Exit	    106
 #define IDC_TextOut	    107
+
 HWND hEdit;
 HWND hTextOut;
 
@@ -122,50 +123,37 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 (HMENU) IDC_TextOut,
                 GetModuleHandle(NULL),
                 NULL);
-			HWND hChC=CreateWindowEx(NULL,
+			HWND hChB=CreateWindowEx(0,
 				"BUTTON",
-				"Change color",
+				NULL,
 				WS_TABSTOP|WS_VISIBLE|
-				WS_CHILD|BS_DEFPUSHBUTTON,
+				WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
 				420,
 				250,
 				150,
 				40,
 				hWnd,
-				(HMENU)IDC_ChC,
-				GetModuleHandle(NULL),
+				(HMENU)IDC_ChB,
+				(HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE),
 				NULL);
-            HWND hChB=CreateWindowEx(NULL,
+            HWND hChF=CreateWindowEx(0,
 				"BUTTON",
-				"Calibri",
+				NULL,
 				WS_TABSTOP|WS_VISIBLE|
-				WS_CHILD|BS_DEFPUSHBUTTON,
+				WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
 				420,
 				306,
-				150,
-				40,
-				hWnd,
-				(HMENU)IDC_ChB,
-				GetModuleHandle(NULL),
-				NULL);
-            HWND hChF=CreateWindowEx(NULL,
-				"BUTTON",
-				"Courier New",
-				WS_TABSTOP|WS_VISIBLE|
-				WS_CHILD|BS_DEFPUSHBUTTON,
-				420,
-				362,
 				150,
 				40,
 				hWnd,
 				(HMENU)IDC_ChF,
 				GetModuleHandle(NULL),
 				NULL);
-            HWND hExit=CreateWindowEx(NULL,
+            HWND hExit=CreateWindowEx(0,
 				"BUTTON",
-				"Exit",
+				NULL,
 				WS_TABSTOP|WS_VISIBLE|
-				WS_CHILD|BS_DEFPUSHBUTTON,
+				WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
 				420,
 				418,
 				150,
@@ -174,11 +162,11 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 				(HMENU)IDC_Exit,
 				GetModuleHandle(NULL),
 				NULL);
-            HWND hOKB=CreateWindowEx(NULL,
+            HWND hOKB=CreateWindowEx(0,
 				"BUTTON",
-				"OK",
+				NULL,
 				WS_TABSTOP|WS_VISIBLE|
-				WS_CHILD|BS_DEFPUSHBUTTON,
+				WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
 				420,
 				180,
 				150,
@@ -195,10 +183,6 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 				WM_SETFONT,
 				(WPARAM)hfDefault,
 				MAKELPARAM(FALSE,0));
-            SendMessage(hChC,
-				WM_SETFONT,
-				(WPARAM)hfDefault,
-				MAKELPARAM(FALSE,0));
             SendMessage(hChF,
 				WM_SETFONT,
 				(WPARAM)hfDefault,
@@ -209,6 +193,98 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 				MAKELPARAM(FALSE,0));
 		}
 		break;
+
+        case WM_DRAWITEM:
+
+        {
+
+            switch ((UINT)wParam)
+
+            {
+
+                case IDC_Exit:
+
+                {
+                    LPDRAWITEMSTRUCT lpdis = (DRAWITEMSTRUCT*)lParam;
+                    SIZE size;
+                    char text[256];
+                    sprintf(text, "%s", "Exit");
+                    GetTextExtentPoint32(lpdis->hDC, text, strlen(text), &size);
+                    SetTextColor(lpdis->hDC, RGB(255, 255, 255));
+                    SetBkColor(lpdis->hDC, RGB(255, 0, 0));
+                    ExtTextOut(lpdis->hDC,
+                    ((lpdis->rcItem.right - lpdis->rcItem.left) - size.cx) / 2,
+                    ((lpdis->rcItem.bottom - lpdis->rcItem.top) - size.cy) / 2,
+                    ETO_OPAQUE | ETO_CLIPPED, &lpdis->rcItem, text, strlen(text), NULL);
+                    DrawEdge(lpdis->hDC, &lpdis->rcItem,
+                    (lpdis->itemState & ODS_SELECTED ?
+                    EDGE_SUNKEN : EDGE_RAISED ), BF_RECT);
+                    return TRUE;
+                }
+                break;
+                case IDC_ChB:
+
+                {
+                    LPDRAWITEMSTRUCT lpdis = (DRAWITEMSTRUCT*)lParam;
+                    SIZE size;
+                    char text[256];
+                    sprintf(text, "%s", "Calibri");
+                    GetTextExtentPoint32(lpdis->hDC, text, strlen(text), &size);
+                    SetTextColor(lpdis->hDC, RGB(255, 255, 255));
+                    SetBkColor(lpdis->hDC, RGB(176,196,255));
+                    ExtTextOut(lpdis->hDC,
+                    ((lpdis->rcItem.right - lpdis->rcItem.left) - size.cx) / 2,
+                    ((lpdis->rcItem.bottom - lpdis->rcItem.top) - size.cy) / 2,
+                    ETO_OPAQUE | ETO_CLIPPED, &lpdis->rcItem, text, strlen(text), NULL);
+                    DrawEdge(lpdis->hDC, &lpdis->rcItem,
+                    (lpdis->itemState & ODS_SELECTED ?
+                    EDGE_SUNKEN : EDGE_RAISED ), BF_RECT);
+                    return TRUE;
+                }
+                break;
+                case IDC_ChF:
+
+                {
+                    LPDRAWITEMSTRUCT lpdis = (DRAWITEMSTRUCT*)lParam;
+                    SIZE size;
+                    char text[256];
+                    sprintf(text, "%s", "Courier New");
+                    GetTextExtentPoint32(lpdis->hDC, text, strlen(text), &size);
+                    SetTextColor(lpdis->hDC, RGB(255, 255, 255));
+                    SetBkColor(lpdis->hDC, RGB(0,100,0));
+                    ExtTextOut(lpdis->hDC,
+                    ((lpdis->rcItem.right - lpdis->rcItem.left) - size.cx) / 2,
+                    ((lpdis->rcItem.bottom - lpdis->rcItem.top) - size.cy) / 2,
+                    ETO_OPAQUE | ETO_CLIPPED, &lpdis->rcItem, text, strlen(text), NULL);
+                    DrawEdge(lpdis->hDC, &lpdis->rcItem,
+                    (lpdis->itemState & ODS_SELECTED ?
+                    EDGE_SUNKEN : EDGE_RAISED ), BF_RECT);
+                    return TRUE;
+                }
+                break;
+                case IDC_OKB:
+
+                {
+                    LPDRAWITEMSTRUCT lpdis = (DRAWITEMSTRUCT*)lParam;
+                    SIZE size;
+                    char text[256];
+                    sprintf(text, "%s", "OK");
+                    GetTextExtentPoint32(lpdis->hDC, text, strlen(text), &size);
+                    SetTextColor(lpdis->hDC, RGB(255, 255, 255));
+                    SetBkColor(lpdis->hDC, RGB(199,21,133));
+                    ExtTextOut(lpdis->hDC,
+                    ((lpdis->rcItem.right - lpdis->rcItem.left) - size.cx) / 2,
+                    ((lpdis->rcItem.bottom - lpdis->rcItem.top) - size.cy) / 2,
+                    ETO_OPAQUE | ETO_CLIPPED, &lpdis->rcItem, text, strlen(text), NULL);
+                    DrawEdge(lpdis->hDC, &lpdis->rcItem,
+                    (lpdis->itemState & ODS_SELECTED ?
+                    EDGE_SUNKEN : EDGE_RAISED ), BF_RECT);
+                    return TRUE;
+                }
+                break;
+            }
+        }
+        break;
 
 		case WM_COMMAND:
 			switch(LOWORD(wParam))
@@ -234,12 +310,6 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 				}
 				break;
 				case IDC_ChB:
-				{
-					hfont = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, TEXT("Calibri"));
-                        SendMessage(hTextOut, WM_SETFONT, (WPARAM)hfont, 1);
-				}
-				break;
-				case IDC_ChC:
 				{
 					hfont = CreateFont(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, TEXT("Calibri"));
                         SendMessage(hTextOut, WM_SETFONT, (WPARAM)hfont, 1);
