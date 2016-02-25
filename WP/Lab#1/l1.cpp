@@ -42,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nShow
 	HWND hWnd=CreateWindowEx(NULL,
 			"Window Class",
 			"Windows application for lab#1",
-			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
+			WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,
 			200,
 			200,
 			600,
@@ -84,6 +84,8 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
     char string[] = "Done with Pride and Prejudice by Postica Denis";
     HDC hDC;
     HFONT hfont;
+    RECT rcWindow, rcClient;
+    int iScreenW, iScreenH, iClientWidth, iClientHeight;
 	switch(msg)
 	{
 		case WM_CREATE:
@@ -193,7 +195,20 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 				MAKELPARAM(FALSE,0));
 		}
 		break;
-
+		case WM_SYSCOMMAND:
+		{
+			switch(wParam)
+			{
+				case SC_CLOSE:
+					return MessageBox(NULL,
+						TEXT("Can't perform action "),
+						TEXT("Close"),
+						MB_OK | MB_ICONASTERISK);
+					break;
+				default:
+					return DefWindowProc(hWnd, msg, wParam, lParam);
+			}
+		}
         case WM_DRAWITEM:
 
         {
