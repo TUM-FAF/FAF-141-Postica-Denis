@@ -1,4 +1,4 @@
-                                                    Windows Programming Laboratory Work #1
+Windows Programming Laboratory Work #1
 
 
 Window. Window handling. Basic window’s form elements
