@@ -1,0 +1,20 @@
+#include <windows.h>
+#include "sysmets.h"
+
+IDI_ICON ICON "lab2.ico"
+
+IDM_menu MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Exit     Ctrl+Q", ID_EXIT
+    END
+    POPUP "&Data"
+    BEGIN
+        MENUITEM "&Clear all data", ID_DATA
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About     Ctrl+I", ID_ABOUT
+    END
+END

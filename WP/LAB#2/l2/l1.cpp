@@ -24,6 +24,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     RegisterClassEx(&wndclass);
 
+    wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_icon));
+    wndclass.hIconSm = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_icon));
+    wndclass.hCursor = LoadCursor (NULL, IDC_HAND);
+    wndclass.lpszMenuName = MAKEINTRESOURCE(IDM_menu);
+    wndclass.cbClsExtra = 0;
+    wndclass.cbWndExtra = 0;
+
     hwnd = CreateWindow(
     szAppName,
     "Laboratory Work #2",

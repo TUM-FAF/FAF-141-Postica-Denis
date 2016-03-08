@@ -38,6 +38,9 @@
 			<Add library="comctl32" />
 		</Linker>
 		<Unit filename="l1.cpp" />
+		<Unit filename="res.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="sysmets.h" />
 		<Extensions>
 			<code_completion />
