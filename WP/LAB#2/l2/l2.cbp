@@ -38,6 +38,7 @@
 			<Add library="comctl32" />
 		</Linker>
 		<Unit filename="l1.cpp" />
+		<Unit filename="lab2.ico" />
 		<Unit filename="res.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
