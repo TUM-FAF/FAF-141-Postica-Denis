@@ -1,7 +1,7 @@
 #include <windows.h>
 #include "sysmets.h"
 
-IDI_ICON ICON "lab2.ico"
+IDI_icon ICON "lab2.ico"
 
 IDM_menu MENU
 BEGIN
@@ -17,4 +17,15 @@ BEGIN
     BEGIN
         MENUITEM "&About     Ctrl+I", ID_ABOUT
     END
+END
+
+IDD_DIALOG DIALOG  100, 50, 180, 100
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Sans Serif"
+CAPTION "About"
+BEGIN
+    DEFPUSHBUTTON   "&OK", IDOK, 67, 75, 50, 14
+    ICON IDI_icon, IDC_static, 80, 7, 32, 32
+    CTEXT "Copyright", IDC_static, 7, 40, 165, 10
+    CTEXT "by Postica Denis", IDC_static, 67, 57, 50, 10
 END

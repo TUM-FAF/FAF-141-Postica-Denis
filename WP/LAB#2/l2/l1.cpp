@@ -1,8 +1,16 @@
+#if defined(UNICODE) && !defined(_UNICODE)
+    #define _UNICODE
+#elif defined(_UNICODE) && !defined(UNICODE)
+    #define UNICODE
+#endif
+
+#include <tchar.h>
 #include <windows.h>
 #include <stdio.h>
 #include "sysmets.h"
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -54,6 +62,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
     static int cxChar, cxCaps, cyChar, cxClient, cyClient, iMaxWidth,
      iVscrollPos, iVscrollMax, iHscrollPos, iHscrollMax;
+    static HINSTANCE hInstance;
     char szBuffer[10];
     char string[] = "Copyright by Postica Denis";
     char string1[] = "Information";
@@ -89,6 +98,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             return 0;
         }
         break;
+    case WM_SETCURSOR:
+        {
+            if (LOWORD(lParam) == HTCLIENT)
+                {
+                    SetCursor(LoadCursor (NULL, IDC_HAND));
+                    return TRUE;
+                }
+        }
+        break;
     case WM_DRAWITEM:
 
         {
@@ -118,12 +136,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-
+          case WM_GETMINMAXINFO:
+        {
+            LPMINMAXINFO MM = (LPMINMAXINFO)lParam;
+            MM->ptMinTrackSize.x = 400;
+            MM->ptMinTrackSize.y = 300;
+            MM->ptMaxTrackSize.x = 1200;
+            MM->ptMaxTrackSize.y = 900;
+        }
+        break;
     case WM_SIZE :
         {
             cxClient = LOWORD(lParam);
             cyClient = HIWORD(lParam);
-           // iVscrollMax = max(0, NUMLINES + 2 - cyClient / cyChar);
+            iVscrollMax = max(0, 2 + (900 - cyClient) / cyChar);
             iVscrollPos = min(iVscrollPos, iVscrollMax);
             SetScrollRange(hwnd, SB_VERT, 0, iVscrollMax, FALSE);
             SetScrollPos(hwnd, SB_VERT, iVscrollPos, TRUE);
@@ -147,6 +173,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                         MB_ICONWARNING | MB_OK | MB_DEFBUTTON2);
 				}
 				break;
+				case ID_ABOUT:
+                {
+                    DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG), hwnd, AboutDlgProc);
+                    break;
+                }
+                break;
             }
             return 0;
             }
@@ -229,6 +261,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    case WM_HOTKEY:
+        {
+            switch(wParam)
+            {
+                case HK_EXIT:
+                    PostQuitMessage(0);
+                    break;
+
+                case HK_ABOUT:
+                    DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG), hwnd, AboutDlgProc);
+                    break;
+                default:
+                    break;
+            }
+        }
+         break;
     case WM_DESTROY :
         {
             PostQuitMessage(0);
@@ -237,4 +285,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         break;
     }
     return DefWindowProc(hwnd, iMsg, wParam, lParam);
+}
+BOOL CALLBACK AboutDlgProc(HWND hDlg, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+    switch(Message)
+    {
+        case WM_INITDIALOG:
+            return TRUE;
+
+        case WM_COMMAND:
+            switch(LOWORD(wParam))
+            {
+                case IDOK:
+                case IDCANCEL:
+                    EndDialog(hDlg, 0);
+                    return TRUE;
+            }
+    }
+    return FALSE;
 }

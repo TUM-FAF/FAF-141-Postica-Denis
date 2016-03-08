@@ -1,3 +1,10 @@
 #define IDC_inf  100
 #define IDI_icon 101
 #define IDM_menu 102
+#define ID_EXIT                 103
+#define ID_DATA                 104
+#define ID_ABOUT                105
+#define IDD_DIALOG              106
+#define IDC_static              107
+#define HK_EXIT                 108
+#define HK_ABOUT                109
