@@ -39,13 +39,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.cbClsExtra = 0;
     wndclass.cbWndExtra = 0;
 
+    //if (!RegisterClassEx (&wndclass))
+       //return 0;
+
     hwnd = CreateWindow(
     szAppName,
     "Laboratory Work #2",
     WS_OVERLAPPEDWINDOW | WS_VSCROLL | WS_HSCROLL,
     CW_USEDEFAULT, CW_USEDEFAULT,
-    CW_USEDEFAULT, CW_USEDEFAULT,
-    NULL, NULL, hInstance, NULL
+    630, 500,
+    HWND_DESKTOP, NULL, hInstance, NULL
     );
     ShowWindow(hwnd, iCmdShow);
     UpdateWindow(hwnd);
@@ -82,14 +85,55 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             ReleaseDC(hwnd, hdc);
             iMaxWidth = 40 * cxChar + 22 * cxCaps;
 
-            HWND hInf=CreateWindowEx(0,
+            HWND hEditBox=CreateWindowEx(
+                (DWORD)NULL,
+                TEXT("ListBox"),
+                NULL,
+                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOVSCROLL | LBS_NOTIFY | LBS_WANTKEYBOARDINPUT | LBS_DISABLENOSCROLL,
+                335, 15, 250, 354, hwnd,
+                (HMENU)IDC_edit,
+                GetModuleHandle(NULL),
+                NULL);
+
+            HWND hElement= CreateWindowEx(
+                (DWORD)NULL,
+                TEXT("Edit"),
+                TEXT(""),
+                WS_CHILD | WS_VISIBLE | WS_BORDER,
+                15, 15, 250, 350, hwnd,
+                (HMENU)IDC_element,
+                GetModuleHandle(NULL),
+                NULL);
+
+            HWND hwndAdd = CreateWindowEx(
+                (DWORD)NULL,
+                TEXT("Button"),
+                TEXT("Add"),
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                15, 400, 100, 40, hwnd,
+                (HMENU)IDC_add,
+                GetModuleHandle(NULL),
+                NULL);
+
+            HWND hwndRmv = CreateWindowEx(
+                (DWORD)NULL,
+                TEXT("Button"),
+                TEXT("Remove"),
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                140, 400, 100, 40, hwnd,
+                (HMENU)IDC_rmv,
+                GetModuleHandle(NULL),
+                NULL);
+
+            HWND hInf=CreateWindowEx(
+                    0,
                     "BUTTON",
                     NULL,
                     WS_TABSTOP|WS_VISIBLE|
                     WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
-                    420,
-                    250,
-                    150,
+                    270,
+                    400,
+                    100,
                     40,
                     hwnd,
                     (HMENU)IDC_inf,
@@ -139,10 +183,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
           case WM_GETMINMAXINFO:
         {
             LPMINMAXINFO MM = (LPMINMAXINFO)lParam;
-            MM->ptMinTrackSize.x = 400;
-            MM->ptMinTrackSize.y = 300;
+            MM->ptMinTrackSize.x = 630;
+            MM->ptMinTrackSize.y = 500;
             MM->ptMaxTrackSize.x = 1200;
-            MM->ptMaxTrackSize.y = 900;
+            MM->ptMaxTrackSize.y = 800;
         }
         break;
     case WM_SIZE :

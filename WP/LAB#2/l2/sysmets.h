@@ -1,6 +1,10 @@
 #define IDC_inf  100
-#define IDI_icon 101
-#define IDM_menu 102
+#define IDC_edit 101
+#define IDC_element 102
+#define IDC_add 112
+#define IDC_rmv 113
+#define IDI_icon 110
+#define IDM_menu 111
 #define ID_EXIT                 103
 #define ID_DATA                 104
 #define ID_ABOUT                105
