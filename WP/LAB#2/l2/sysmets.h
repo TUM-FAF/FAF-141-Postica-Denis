@@ -12,3 +12,7 @@
 #define IDC_static              107
 #define HK_EXIT                 108
 #define HK_ABOUT                109
+#define IDM_label_1  114
+#define IDM_label_2  115
+#define ID_wscroll 116
+#define ID_hscroll 117
