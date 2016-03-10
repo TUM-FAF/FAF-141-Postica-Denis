@@ -11,6 +11,7 @@
   * Listbox
  * Menus and Other Resources
  * Dialog Boxes
+ 
 ###What have I done
     I have created a Windows application with one listbox and one edit box, 3 buttons and 2 scroll bars. 
 Using boxes you can input and output some text. Using buttons you can add or remove an element, also to see the information about application. Using scroll bars you can change the size of the window.
