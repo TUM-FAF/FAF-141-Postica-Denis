@@ -11,26 +11,23 @@
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+int iMinW  = 600;
+int iMinH = 500;
+TCHAR szClassName[ ] = _T("CodeBlocksWindowsApp");
+int WINAPI WinMain (HINSTANCE hInstance,
+                     HINSTANCE hPrevInstance,
+                     LPSTR lpszArgument,
+                     int nCmdShow)
 {
-    static char szAppName[] = "Laboratory Work #2";
     HWND hwnd;
     MSG msg;
     WNDCLASSEX wndclass;
-    wndclass.cbSize = sizeof(wndclass);
-    wndclass.style = CS_HREDRAW | CS_VREDRAW;
-    wndclass.lpfnWndProc = WndProc;
-    wndclass.cbClsExtra = 0;
-    wndclass.cbWndExtra = 0;
+
     wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wndclass.hbrBackground =(HBRUSH) GetStockObject(WHITE_BRUSH);
-    wndclass.lpszMenuName = NULL;
-    wndclass.lpszClassName = szAppName;
-    wndclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-    RegisterClassEx(&wndclass);
+    wndclass.lpszClassName = szClassName;
+    wndclass.lpfnWndProc = WndProc;
+    wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+    wndclass.cbSize = sizeof (WNDCLASSEX);
 
     wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_icon));
     wndclass.hIconSm = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_icon));
@@ -39,21 +36,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.cbClsExtra = 0;
     wndclass.cbWndExtra = 0;
 
-    //if (!RegisterClassEx (&wndclass))
-       //return 0;
+    wndclass.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(173,216,230));
 
-    hwnd = CreateWindow(
-    szAppName,
-    "Laboratory Work #2",
-    WS_OVERLAPPEDWINDOW | WS_VSCROLL | WS_HSCROLL,
-    CW_USEDEFAULT, CW_USEDEFAULT,
-    630, 500,
-    HWND_DESKTOP, NULL, hInstance, NULL
-    );
-    ShowWindow(hwnd, iCmdShow);
+    if (!RegisterClassEx (&wndclass))
+        return 0;
+
+    hwnd = CreateWindowEx (
+           0,
+           szClassName,
+           _T("Laboratory Work #2"),
+           WS_OVERLAPPEDWINDOW ,
+           CW_USEDEFAULT,
+           CW_USEDEFAULT,
+           iMinW,
+           iMinH,
+           HWND_DESKTOP,
+           NULL,
+           hInstance,
+           NULL
+           );
+
+    ShowWindow (hwnd, nCmdShow);
     UpdateWindow(hwnd);
 
-    while(GetMessage(&msg, NULL, 0, 0))
+    while (GetMessage (&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -71,12 +77,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     char string1[] = "Information";
     HDC hdc;
     SCROLLINFO si;
-    RECT rcWindow, rcClient;
+    RECT rcWindow, rcClient,rect;
     static HWND hChild[9];
-    int  iClientWidth, iClientHeight;
-    int i, x, y, iPaintBeg, iPaintEnd, iVscrollInc, iHscrollInc;
+    int  iClientWidth, iClientHeight, iWListBox, iHListBox,iWinWidth,iWinHeight;
+    int i, x, y, iPaintBeg, iPaintEnd, iVscrollInc, iHscrollInc,iSysWidth, iSysHeight;
+    static int xPos, xMin, xMax;
     PAINTSTRUCT ps;
     TEXTMETRIC tm;
+    char* szText;
+    int iTextLength;
     switch(iMsg)
     {
     case WM_CREATE :
@@ -94,7 +103,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                 TEXT("ListBox"),
                 NULL,
                 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOVSCROLL | LBS_NOTIFY | LBS_WANTKEYBOARDINPUT | LBS_DISABLENOSCROLL,
-                335, 15, 250, 354, hwnd,
+                0,
+                0,
+                0,
+                0,
+                hwnd,
                 (HMENU)IDC_edit,
                 GetModuleHandle(NULL),
                 NULL);
@@ -104,7 +117,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                 TEXT("Edit"),
                 TEXT(""),
                 WS_CHILD | WS_VISIBLE | WS_BORDER,
-                15, 15, 250, 350, hwnd,
+                0,
+                0,
+                0,
+                0,
+                hwnd,
                 (HMENU)IDC_element,
                 GetModuleHandle(NULL),
                 NULL);
@@ -114,72 +131,95 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                 TEXT("Button"),
                 TEXT("Add"),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                15, 400, 100, 40, hwnd,
+                0,
+                0,
+                0,
+                0,
+                hwnd,
                 (HMENU)IDC_add,
                 GetModuleHandle(NULL),
                 NULL);
 
-            hChild[8] = CreateWindowEx(
+            hChild[3] = CreateWindowEx(
                 (DWORD)NULL,
                 TEXT("Button"),
                 TEXT("Remove"),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                140, 400, 100, 40, hwnd,
+                0,
+                0,
+                0,
+                0,
+                hwnd,
                 (HMENU)IDC_rmv,
                 GetModuleHandle(NULL),
                 NULL);
 
-            hChild[3]=CreateWindowEx(
+            hChild[4]=CreateWindowEx(
                     0,
                     "BUTTON",
                     NULL,
                     WS_TABSTOP|WS_VISIBLE|
                     WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
-                    270,
-                    400,
-                    100,
-                    40,
+                    0,
+                    0,
+                    0,
+                    0,
                     hwnd,
                     (HMENU)IDC_inf,
                     (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
                     NULL);
 
-            hChild[4] = CreateWindowEx(
+            hChild[5] = CreateWindowEx(
                 (DWORD)NULL,
                 TEXT("static"),
-                TEXT("Window Width and Height"),
+                TEXT("Window Width"),
                 WS_CHILD | WS_VISIBLE | SS_LEFT,
-                0, 0, 0, 0, hwnd,
+                0,
+                0,
+                0,
+                0,
+                hwnd,
                 (HMENU)IDM_label_1,
                 (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
                 NULL);
 
-            hChild[5]= CreateWindowEx(
+            hChild[6]= CreateWindowEx(
                 (DWORD)NULL,
                 TEXT("static"),
                 TEXT("Window Height"),
                 WS_CHILD | WS_VISIBLE | SS_LEFT,
-                0, 0, 0, 0,
+                0,
+                0,
+                0,
+                0,
                 hwnd,
                 (HMENU)IDM_label_2,
                 (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
                 NULL);
 
-            hChild[6] = CreateWindow(
+            hChild[7] = CreateWindow(
                 "Scrollbar",
                 NULL,
                 WS_CHILD | WS_VISIBLE | SBS_HORZ | SBS_BOTTOMALIGN,
-                0, 0, 0, 0, hwnd,
+                0,
+                0,
+                0,
+                0,
+                hwnd,
                 (HMENU)ID_wscroll,
                 (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
                 NULL);
             SetScrollRange(hChild[6], SB_CTL, 0, 100, TRUE);
 
-            hChild[7] = CreateWindow(
+            hChild[8] = CreateWindow(
                 "Scrollbar",
                 NULL,
                 WS_CHILD | WS_VISIBLE | SBS_HORZ | SBS_BOTTOMALIGN,
-                0, 0, 0, 0, hwnd,
+                0,
+                0,
+                0,
+                0,
+                hwnd,
                 (HMENU)ID_hscroll,
                 (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
                 NULL);
@@ -229,8 +269,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
           case WM_GETMINMAXINFO:
         {
             LPMINMAXINFO MM = (LPMINMAXINFO)lParam;
-            MM->ptMinTrackSize.x = 630;
-            MM->ptMinTrackSize.y = 500;
+            MM->ptMinTrackSize.x = 410;
+            MM->ptMinTrackSize.y = 250;
             MM->ptMaxTrackSize.x = 1200;
             MM->ptMaxTrackSize.y = 800;
         }
@@ -239,37 +279,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         {
             cxClient  = LOWORD(lParam);
             cyClient = HIWORD(lParam);
-            iListBoxWidth = cxClient/2 + 50;
-            iListBoxHeight = cyClient - 80;
+            iWListBox = cxClient/2 - 50;
+            iHListBox = cyClient - 150;
 
             si.cbSize = sizeof(si);
             si.fMask = SIF_RANGE | SIF_PAGE;
             si.nMin = 0;
-            si.nMax = ((iMinWindowHeight - 150) / cyChar);
+            si.nMax = ((iMinH - 150) / cyChar);
             si.nPage = cyClient / cyChar;
             SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
 
             si.cbSize = sizeof(si);
             si.fMask = SIF_RANGE | SIF_PAGE;
             si.nMin = 0;
-            si.nMax = ((iMinWindowWidth - 100) / cxChar);
+            si.nMax = ((iMinW - 100) / cxChar);
             si.nPage = cxClient / cxChar;
             SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
 
-            MoveWindow(hChild[0], 20, 65, iListBoxWidth, iListBoxHeight, TRUE);
-            MoveWindow(hChild[0], 20, 30, iListBoxWidth/2 + 45, 25, TRUE);
-            MoveWindow(hChild[0], iListBoxWidth/2 + 75,30, iListBoxWidth/2 - 55, 25, TRUE);
+            MoveWindow(hChild[0], iWListBox+90, 20, iWListBox, iHListBox, TRUE);
+            MoveWindow(hChild[1], 20, 20, iWListBox, iHListBox, TRUE);
+            MoveWindow(hChild[2], 20, iHListBox+40, iWListBox/5*2, 40, TRUE);
 
-            MoveWindow(hChild[0], cxClient/2 + 90, 70, (cxClient - (cxClient/2 + 90) - 20), 25, TRUE);
-            MoveWindow(hChild[0], cxClient/2 + 90, 105, (cxClient - (cxClient/2 + 90) - 20), 25, TRUE);
+            MoveWindow(hChild[3], iWListBox/5*2+40, iHListBox+40, iWListBox/5*2, 40, TRUE);
+            MoveWindow(hChild[4], 2*iWListBox/5*2+60, iHListBox+40, iWListBox/5*2, 40, TRUE);
 
-            MoveWindow(hChild[0], cxClient/2 + 90, 175, (cxClient - (cxClient/2 + 90) - 20), 20, TRUE);
+            MoveWindow(hChild[5], 20, iHListBox+90,  cxClient/3, 20, TRUE);
+            MoveWindow(hChild[6], cxClient/2-20, iHListBox+90,  cxClient/3, 20, TRUE);
 
-            MoveWindow(hChild[0], cxClient/2 + 90, 240,  (cxClient - (cxClient/2 + 90) - 20), 20, TRUE);
-            MoveWindow(hChild[0], cxClient/2 + 90, 265,  (cxClient - (cxClient/2 + 90) - 20), 20, TRUE);
-
-            MoveWindow(hChild[0], cxClient/2 + 90, 305,  (cxClient - (cxClient/2 + 90) - 20), 20, TRUE);
-            MoveWindow(hChild[0], cxClient/2 + 90, 330,  (cxClient - (cxClient/2 + 90) - 20), 20, TRUE);
+            MoveWindow(hChild[7], 20, iHListBox+120,  cxClient/3, 20, TRUE);
+            MoveWindow(hChild[8], cxClient/2-20, iHListBox+120,  cxClient/3, 20, TRUE);
 
             GetWindowRect(hwnd, &rect);
             iWinWidth = rect.right - rect.left;
@@ -280,15 +318,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             xPos = 0;
             xMin = 0;
             xMax = 255;
-            SetScrollRange(hwndBackgroundScroll, SB_CTL, xMin, xMax, FALSE);
-            SetScrollPos(hwndBackgroundScroll, SB_CTL, xPos, TRUE);
-
-            // Set width scrollbar position
-            SetScrollPos(hwndWidthScroll, SB_CTL, (iWinWidth * 100 / iSysWidth), TRUE);
-
-            // Set height scrollbar position
-            SetScrollPos(hwndHeightScroll, SB_CTL, (iWinHeight * 100 / iSysHeight), TRUE);
-			break;
+            SetScrollPos(hChild[6], SB_CTL, (iWinWidth * 100 / iSysWidth), TRUE);
+            SetScrollPos(hChild[7], SB_CTL, (iWinHeight * 100 / iSysHeight), TRUE);
             return 0;
         }
         break;
@@ -305,12 +336,57 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                         MB_ICONWARNING | MB_OK | MB_DEFBUTTON2);
 				}
 				break;
-				case ID_ABOUT:
+                case IDC_edit:
                 {
-                    DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG), hwnd, AboutDlgProc);
+                    if(HIWORD(wParam) == LBN_DBLCLK)
+                    {
+                        int index = SendMessage(GetDlgItem(hwnd, IDC_edit), LB_GETCURSEL, 0, 0);
+                        int textLength = SendMessage(hChild[0], LB_GETTEXTLEN, (WPARAM)index, 0);
+                        TCHAR * buffer = new TCHAR[textLength + 1];
+                        buffer[textLength + 1] = _T('\0');
+                        SendMessage(hChild[0], LB_GETTEXT, (WPARAM)index, (LPARAM)buffer);
+                        char buffer1[50] = "You've selected \0";
+                        char * buffer2 = new char[textLength + 1 + strlen(buffer1) + 20];
+                        buffer2[0] = '\0';
+                        strcat(buffer2, buffer1); strcat(buffer2, buffer);
+                        MessageBox(NULL, buffer2, "About", MB_OK);
+                        delete [] buffer;
+                        delete [] buffer2;
+                    }
                     break;
                 }
-                break;
+
+                case IDC_add:
+                    iTextLength = SendMessage(hChild[2], WM_GETTEXTLENGTH, 0, 0);
+                    szText = (char*)malloc(iTextLength+1);
+                    SendMessage(hChild[1], WM_GETTEXT, iTextLength+1, (LPARAM)szText);
+                    SendMessage(hChild[0], LB_ADDSTRING, 0, (LPARAM)szText);
+                    SendMessage(hChild[1], WM_SETTEXT, 0, (LPARAM)"");
+                    free(szText);
+                    break;
+
+                case IDC_rmv:
+                    i = SendMessage(hChild[0], LB_GETCURSEL, 0, 0);
+                    if(i != LB_ERR) {
+                        SendMessage(hChild[0], LB_DELETESTRING, i, 0);
+                    }
+                    break;
+
+                case ID_EXIT:
+                    SendMessage(hwnd, WM_DESTROY, 0, 0);
+                    break;
+
+                case ID_DATA:
+                    SendMessage(hChild[0], LB_RESETCONTENT, 0, 0);
+                    break;
+
+                case ID_ABOUT:
+                    DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG), hwnd, AboutDlgProc);
+                    break;
+
+                default:
+                    DefWindowProc(hwnd, WM_COMMAND, wParam, lParam);
+                    break;
             }
             return 0;
             }
