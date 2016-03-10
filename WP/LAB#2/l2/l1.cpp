@@ -36,7 +36,7 @@ int WINAPI WinMain (HINSTANCE hInstance,
     wndclass.cbClsExtra = 0;
     wndclass.cbWndExtra = 0;
 
-    wndclass.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(173,216,230));
+    wndclass.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(150,150,200));
 
     if (!RegisterClassEx (&wndclass))
         return 0;
@@ -69,20 +69,19 @@ int WINAPI WinMain (HINSTANCE hInstance,
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-    static int cxChar, cxCaps, cyChar, cxClient, cyClient, iMaxWidth,
-     iVscrollPos, iVscrollMax, iHscrollPos, iHscrollMax;
+    static int cxChar, cxCaps, cyChar, cxClient, cyClient, iMaxWidth;
     static HINSTANCE hInstance;
-    char szBuffer[10];
     char string[] = "Copyright by Postica Denis";
     char string1[] = "Information";
     HDC hdc;
     SCROLLINFO si;
-    RECT rcWindow, rcClient,rect;
+    RECT rect;
+    int SysWidth,SysHeight;
+    int WinWidth,WinHeight;
     static HWND hChild[9];
-    int  iClientWidth, iClientHeight, iWListBox, iHListBox,iWinWidth,iWinHeight;
-    int i, x, y, iPaintBeg, iPaintEnd, iVscrollInc, iHscrollInc,iSysWidth, iSysHeight;
+    int   iWListBox, iHListBox,iWinWidth,iWinHeight;
+    int i, x, y,iSysWidth, iSysHeight;
     static int xPos, xMin, xMax;
-    PAINTSTRUCT ps;
     TEXTMETRIC tm;
     char* szText;
     int iTextLength;
@@ -394,80 +393,164 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_VSCROLL :
         {
-            switch(LOWORD(wParam))
-            {
-                case SB_TOP :
-                    iVscrollInc = -iVscrollPos;
+            si.cbSize = sizeof(si);
+            si.fMask = SIF_ALL;
+            GetScrollInfo(hwnd, SB_VERT, &si);
+
+            y = si.nPos;
+
+            switch(LOWORD(wParam)) {
+                case SB_TOP:
+                    si.nPos = si.nMin;
                     break;
-                case SB_BOTTOM :
-                    iVscrollInc = iVscrollMax - iVscrollPos;
+
+                case SB_BOTTOM:
+                    si.nPos = si.nMax;
                     break;
-                case SB_LINEUP :
-                    iVscrollInc = -1;
+
+                case SB_LINEUP:
+                    si.nPos -= 1;
                     break;
-                case SB_LINEDOWN :
-                    iVscrollInc = 1;
+
+                case SB_LINEDOWN:
+                    si.nPos += 1;
                     break;
-                case SB_PAGEUP :
-                    iVscrollInc = min(-1, -cyClient / cyChar);
+
+                case SB_PAGEUP:
+                    si.nPos -= si.nPage;
                     break;
-                case SB_PAGEDOWN :
-                    iVscrollInc = max(1, cyClient / cyChar);
+
+                case SB_PAGEDOWN:
+                    si.nPos += si.nPage;
                     break;
-                case SB_THUMBTRACK :
-                    iVscrollInc = HIWORD(wParam) - iVscrollPos;
+
+                case SB_THUMBTRACK:
+                    si.nPos = si.nTrackPos;
                     break;
-                default :
-                    iVscrollInc = 0;
+
+                default:
+                    break;
             }
-                iVscrollInc = max(
-                -iVscrollPos,
-                min(iVscrollInc, iVscrollMax - iVscrollPos)
-                );
-                if (iVscrollInc != 0)
-                {
-                    iVscrollPos += iVscrollInc;
-                    ScrollWindow(hwnd, 0, -cyChar * iVscrollInc, NULL, NULL);
-                    SetScrollPos(hwnd, SB_VERT, iVscrollPos, TRUE);
-                    UpdateWindow(hwnd);
+
+            // Set the position and then retrieve it
+            si.fMask = SIF_POS;
+            SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+            GetScrollInfo(hwnd, SB_VERT, &si);
+
+            // If the position has changed, scroll the window and update it
+            if(si.nPos != y) {
+                ScrollWindow(hwnd, 0, cyChar * (y - si.nPos), NULL, NULL);
+                UpdateWindow(hwnd);
+            }
+            return 0;
+            }
+        break;
+    case WM_HSCROLL:
+            GetWindowRect(hwnd, &rect);
+            WinWidth = rect.right - rect.left;
+            WinHeight = rect.bottom - rect.top;
+            SysWidth = GetSystemMetrics(SM_CXSCREEN);
+            SysHeight = GetSystemMetrics(SM_CYSCREEN);
+            if(GetWindowLong((HWND)lParam, GWL_ID) == ID_wscroll) {
+                si.cbSize = sizeof(si);
+                si.fMask = SIF_ALL;
+                GetScrollInfo(hChild[7], SB_CTL, &si);
+                x = si.nPos;
+                switch(LOWORD(wParam)) {
+                    case SB_LINELEFT:
+                        si.nPos -= 1;
+                        break;
+                    case SB_LINERIGHT:
+                        si.nPos += 1;
+                        break;
+                    case SB_THUMBPOSITION:
+                        si.nPos = si.nTrackPos;
+                        break;
+                    default:
+                        break;
                 }
-            return 0;
+                si.fMask = SIF_POS;
+                SetScrollInfo(hChild[7], SB_CTL, &si, TRUE);
+                GetScrollInfo(hChild[7], SB_CTL, &si);
+                if(si.nPos != x) {
+                    SetScrollPos(hChild[8], SB_CTL, si.nPos, TRUE);
+                }
+                // Set window width
+                MoveWindow(hwnd, rect.left, rect.top, (si.nPos * SysWidth / 100), WinHeight, TRUE);
+                break;
             }
-        break;
-    case WM_HSCROLL :
-            {switch(LOWORD(wParam))
-            {
-                case SB_LINEUP :
-                    iHscrollInc = -1;
-                    break;
-                case SB_LINEDOWN :
-                    iHscrollInc = 1;
-                    break;
-                case SB_PAGEUP :
-                    iHscrollInc = -8;
-                    break;
-                case SB_PAGEDOWN :
-                    iHscrollInc = 8;
-                    break;
-                case SB_THUMBPOSITION :
-                    iHscrollInc = HIWORD(wParam) - iHscrollPos;
-                    break;
-                default :
-                    iHscrollInc = 0;
+
+            if(GetWindowLong((HWND)lParam, GWL_ID) == ID_hscroll) {
+                si.cbSize = sizeof(si);
+                si.fMask = SIF_ALL;
+                GetScrollInfo(hChild[8], SB_CTL, &si);
+                x = si.nPos;
+                switch(LOWORD(wParam)) {
+                    case SB_LINELEFT:
+                        si.nPos -= 1;
+                        break;
+                    case SB_LINERIGHT:
+                        si.nPos += 1;
+                        break;
+                    case SB_THUMBPOSITION:
+                        si.nPos = si.nTrackPos;
+                        break;
+                    default:
+                        break;
+                }
+                si.fMask = SIF_POS;
+                SetScrollInfo(hChild[8], SB_CTL, &si, TRUE);
+                GetScrollInfo(hChild[8], SB_CTL, &si);
+                if(si.nPos != x) {
+                    SetScrollPos(hChild[8], SB_CTL, si.nPos, TRUE);
+                }
+                // Set window height
+                MoveWindow(hwnd, rect.left, rect.top, WinWidth, (si.nPos * SysHeight / 100), TRUE);
+                break;
             }
-            iHscrollInc = max(
-            -iHscrollPos,
-            min(iHscrollInc, iHscrollMax - iHscrollPos)
-            );
-            if (iHscrollInc != 0)
-            {
-                iHscrollPos += iHscrollInc;
-                ScrollWindow(hwnd, -cxChar * iHscrollInc, 0, NULL, NULL);
-                SetScrollPos(hwnd, SB_HORZ, iHscrollPos, TRUE);
+
+            // Get all the vertical scroll bar information
+            si.cbSize = sizeof(si);
+            si.fMask = SIF_ALL;
+            GetScrollInfo(hwnd, SB_HORZ, &si);
+
+            // Save the position for later comparison
+            x = si.nPos;
+            switch(LOWORD(wParam)) {
+                case SB_LINELEFT:
+                    si.nPos -= 1;
+                    break;
+
+                case SB_LINERIGHT:
+                    si.nPos += 1;
+                    break;
+
+                case SB_PAGELEFT:
+                    si.nPos -= si.nPage;
+                    break;
+
+                case SB_PAGERIGHT:
+                    si.nPos += si.nPage;
+                    break;
+
+                case SB_THUMBPOSITION:
+                    si.nPos = si.nTrackPos;
+                    break;
+
+                default:
+                    break;
             }
-            return 0;
-        }
-        break;
+            // Set the position and then retrieve it
+            si.fMask = SIF_POS;
+            SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+            GetScrollInfo(hwnd, SB_HORZ, &si);
+
+            // If the position has changed, scroll the window and update it
+            if(si.nPos != x) {
+                ScrollWindow(hwnd, cxChar * (x - si.nPos), 0, NULL, 0);
+                UpdateWindow(hwnd);
+            }
+            break;
 
     case WM_HOTKEY:
         {
