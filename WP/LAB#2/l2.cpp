@@ -98,60 +98,62 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             iMaxWidth = 40 * cxChar + 22 * cxCaps;
 
             hChild[0]=CreateWindowEx(
-                (DWORD)NULL,
-                TEXT("ListBox"),
-                NULL,
-                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOVSCROLL | LBS_NOTIFY | LBS_WANTKEYBOARDINPUT | LBS_DISABLENOSCROLL,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)IDC_edit,
-                GetModuleHandle(NULL),
-                NULL);
+                    (DWORD)NULL,
+                    TEXT("ListBox"),
+                    NULL,
+                    WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOVSCROLL | LBS_NOTIFY | LBS_WANTKEYBOARDINPUT | LBS_DISABLENOSCROLL,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)IDC_edit,
+                    GetModuleHandle(NULL),
+                    NULL);
 
             hChild[1]= CreateWindowEx(
-                (DWORD)NULL,
-                TEXT("Edit"),
-                TEXT(""),
-                WS_CHILD | WS_VISIBLE | WS_BORDER,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)IDC_element,
-                GetModuleHandle(NULL),
-                NULL);
+                    (DWORD)NULL,
+                    TEXT("Edit"),
+                    TEXT(""),
+                    WS_CHILD | WS_VISIBLE | WS_BORDER,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)IDC_element,
+                    GetModuleHandle(NULL),
+                    NULL);
 
             hChild[2] = CreateWindowEx(
-                (DWORD)NULL,
-                TEXT("Button"),
-                TEXT("Add"),
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)IDC_add,
-                GetModuleHandle(NULL),
-                NULL);
+                    (DWORD)NULL,
+                    TEXT("Button"),
+                    NULL,
+                    WS_TABSTOP|WS_VISIBLE|
+                    WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)IDC_add,
+                    GetModuleHandle(NULL),
+                    NULL);
 
             hChild[3] = CreateWindowEx(
-                (DWORD)NULL,
-                TEXT("Button"),
-                TEXT("Remove"),
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)IDC_rmv,
-                GetModuleHandle(NULL),
-                NULL);
+                    (DWORD)NULL,
+                    TEXT("Button"),
+                    NULL,
+                    WS_TABSTOP|WS_VISIBLE|
+                    WS_CHILD|BS_DEFPUSHBUTTON|BS_OWNERDRAW,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)IDC_rmv,
+                    GetModuleHandle(NULL),
+                    NULL);
 
             hChild[4]=CreateWindowEx(
                     0,
@@ -169,60 +171,63 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                     NULL);
 
             hChild[5] = CreateWindowEx(
-                (DWORD)NULL,
-                TEXT("static"),
-                TEXT("Window Width"),
-                WS_CHILD | WS_VISIBLE | SS_LEFT,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)IDM_label_1,
-                (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
-                NULL);
+                    (DWORD)NULL,
+                    TEXT("static"),
+                    TEXT("Window Width"),
+                    WS_CHILD | WS_VISIBLE | SS_LEFT,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)IDM_label_1,
+                    (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
+                    NULL);
 
             hChild[6]= CreateWindowEx(
-                (DWORD)NULL,
-                TEXT("static"),
-                TEXT("Window Height"),
-                WS_CHILD | WS_VISIBLE | SS_LEFT,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)IDM_label_2,
-                (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
-                NULL);
+                    (DWORD)NULL,
+                    TEXT("static"),
+                    TEXT("Window Height"),
+                    WS_CHILD | WS_VISIBLE | SS_LEFT,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)IDM_label_2,
+                    (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
+                    NULL);
 
             hChild[7] = CreateWindow(
-                "Scrollbar",
-                NULL,
-                WS_CHILD | WS_VISIBLE | SBS_HORZ | SBS_BOTTOMALIGN,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)ID_wscroll,
-                (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
-                NULL);
-            SetScrollRange(hChild[6], SB_CTL, 0, 100, TRUE);
+                    "Scrollbar",
+                    NULL,
+                    WS_CHILD | WS_VISIBLE | SBS_HORZ | SBS_BOTTOMALIGN,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)ID_wscroll,
+                    (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
+                    NULL);
+            SetScrollRange(hChild[6], SB_CTL, 0, 50, TRUE);
 
             hChild[8] = CreateWindow(
-                "Scrollbar",
-                NULL,
-                WS_CHILD | WS_VISIBLE | SBS_HORZ | SBS_BOTTOMALIGN,
-                0,
-                0,
-                0,
-                0,
-                hwnd,
-                (HMENU)ID_hscroll,
-                (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
-                NULL);
-            SetScrollRange(hChild[7], SB_CTL, 0, 100, TRUE);
+                    "Scrollbar",
+                    NULL,
+                    WS_CHILD | WS_VISIBLE | SBS_HORZ | SBS_BOTTOMALIGN,
+                    0,
+                    0,
+                    0,
+                    0,
+                    hwnd,
+                    (HMENU)ID_hscroll,
+                    (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
+                    NULL);
+            SetScrollRange(hChild[7], SB_CTL, 0, 50, TRUE);
+            RegisterHotKey(hwnd, HK_EXIT, MOD_CONTROL, 0x51);
+            RegisterHotKey(hwnd, HK_ABOUT, MOD_CONTROL, 0x49);
+            hInstance = ((LPCREATESTRUCT)lParam)->hInstance;
 
             return 0;
         }
@@ -252,6 +257,46 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                     GetTextExtentPoint32(lpdis->hDC, text, strlen(text), &size);
                     SetTextColor(lpdis->hDC, RGB(255, 255, 255));
                     SetBkColor(lpdis->hDC, RGB(176,196,255));
+                    ExtTextOut(lpdis->hDC,
+                    ((lpdis->rcItem.right - lpdis->rcItem.left) - size.cx) / 2,
+                    ((lpdis->rcItem.bottom - lpdis->rcItem.top) - size.cy) / 2,
+                    ETO_OPAQUE | ETO_CLIPPED, &lpdis->rcItem, text, strlen(text), NULL);
+                    DrawEdge(lpdis->hDC, &lpdis->rcItem,
+                    (lpdis->itemState & ODS_SELECTED ?
+                    EDGE_SUNKEN : EDGE_RAISED ), BF_RECT);
+                    return TRUE;
+                }
+                break;
+
+                case IDC_rmv:
+                {
+                    LPDRAWITEMSTRUCT lpdis = (DRAWITEMSTRUCT*)lParam;
+                    SIZE size;
+                    char text[256];
+                    sprintf(text, "%s", "Remove");
+                    GetTextExtentPoint32(lpdis->hDC, text, strlen(text), &size);
+                    SetTextColor(lpdis->hDC, RGB(255, 255, 255));
+                    SetBkColor(lpdis->hDC, RGB(180,136,205));
+                    ExtTextOut(lpdis->hDC,
+                    ((lpdis->rcItem.right - lpdis->rcItem.left) - size.cx) / 2,
+                    ((lpdis->rcItem.bottom - lpdis->rcItem.top) - size.cy) / 2,
+                    ETO_OPAQUE | ETO_CLIPPED, &lpdis->rcItem, text, strlen(text), NULL);
+                    DrawEdge(lpdis->hDC, &lpdis->rcItem,
+                    (lpdis->itemState & ODS_SELECTED ?
+                    EDGE_SUNKEN : EDGE_RAISED ), BF_RECT);
+                    return TRUE;
+                }
+                break;
+
+                case IDC_add:
+                {
+                    LPDRAWITEMSTRUCT lpdis = (DRAWITEMSTRUCT*)lParam;
+                    SIZE size;
+                    char text[256];
+                    sprintf(text, "%s", "Add");
+                    GetTextExtentPoint32(lpdis->hDC, text, strlen(text), &size);
+                    SetTextColor(lpdis->hDC, RGB(255, 255, 255));
+                    SetBkColor(lpdis->hDC, RGB(200,150,100));
                     ExtTextOut(lpdis->hDC,
                     ((lpdis->rcItem.right - lpdis->rcItem.left) - size.cx) / 2,
                     ((lpdis->rcItem.bottom - lpdis->rcItem.top) - size.cy) / 2,
@@ -432,12 +477,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                     break;
             }
 
-            // Set the position and then retrieve it
             si.fMask = SIF_POS;
             SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
             GetScrollInfo(hwnd, SB_VERT, &si);
 
-            // If the position has changed, scroll the window and update it
             if(si.nPos != y) {
                 ScrollWindow(hwnd, 0, cyChar * (y - si.nPos), NULL, NULL);
                 UpdateWindow(hwnd);
@@ -456,18 +499,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                 si.fMask = SIF_ALL;
                 GetScrollInfo(hChild[7], SB_CTL, &si);
                 x = si.nPos;
-                switch(LOWORD(wParam)) {
+
+                switch(LOWORD(wParam))
+                {
                     case SB_LINELEFT:
                         si.nPos -= 1;
-                        break;
+                    break;
+
                     case SB_LINERIGHT:
                         si.nPos += 1;
-                        break;
+                    break;
+
                     case SB_THUMBPOSITION:
                         si.nPos = si.nTrackPos;
-                        break;
-                    default:
-                        break;
+                    break;
+                    default: break;
                 }
                 si.fMask = SIF_POS;
                 SetScrollInfo(hChild[7], SB_CTL, &si, TRUE);
@@ -475,7 +521,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                 if(si.nPos != x) {
                     SetScrollPos(hChild[8], SB_CTL, si.nPos, TRUE);
                 }
-                // Set window width
                 MoveWindow(hwnd, rect.left, rect.top, (si.nPos * SysWidth / 100), WinHeight, TRUE);
                 break;
             }
@@ -504,17 +549,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                 if(si.nPos != x) {
                     SetScrollPos(hChild[8], SB_CTL, si.nPos, TRUE);
                 }
-                // Set window height
                 MoveWindow(hwnd, rect.left, rect.top, WinWidth, (si.nPos * SysHeight / 100), TRUE);
                 break;
             }
 
-            // Get all the vertical scroll bar information
             si.cbSize = sizeof(si);
             si.fMask = SIF_ALL;
             GetScrollInfo(hwnd, SB_HORZ, &si);
 
-            // Save the position for later comparison
             x = si.nPos;
             switch(LOWORD(wParam)) {
                 case SB_LINELEFT:
@@ -540,12 +582,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                 default:
                     break;
             }
-            // Set the position and then retrieve it
             si.fMask = SIF_POS;
             SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
             GetScrollInfo(hwnd, SB_HORZ, &si);
 
-            // If the position has changed, scroll the window and update it
             if(si.nPos != x) {
                 ScrollWindow(hwnd, cxChar * (x - si.nPos), 0, NULL, 0);
                 UpdateWindow(hwnd);
