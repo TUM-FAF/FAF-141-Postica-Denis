@@ -1,0 +1,9 @@
+#include <wingdi.h>
+#include "resource.h"
+IDB_PENCIL BITMAP DISCARDABLE "pencil.bmp"
+IDB_LINE BITMAP DISCARDABLE "line.bmp"
+IDB_ELLIPSE BITMAP DISCARDABLE "ellipse.bmp"
+IDB_ERASER BITMAP DISCARDABLE "eraser.bmp"
+IDB_BEZIER BITMAP DISCARDABLE "bezier.bmp"
+IDB_RECTANGLE BITMAP DISCARDABLE "rectangle.bmp"
+IDI_icon ICON "icon.ico"

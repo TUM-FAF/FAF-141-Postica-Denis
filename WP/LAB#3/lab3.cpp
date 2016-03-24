@@ -7,7 +7,7 @@ LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
 TCHAR szClassName[ ] = _T("WindowsApp");
 HINSTANCE hInst;
-
+HBITMAP hImageBttn = 0;
 void updateColorControls(HDC, COLORREF, int, int);
 int getFromInput(HWND);
 POINT getCurrentPointPosition(int, int, RECT, int);
@@ -130,6 +130,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     {
 
         case WM_CREATE:
+            hImageBttn = LoadBitmap(GetModuleHandle(0), MAKEINTRESOURCE(IDB_PENCIL));
+
             screenW = GetSystemMetrics(SM_CXSCREEN);
             screenH = GetSystemMetrics(SM_CYSCREEN);
             GetWindowRect(hwnd, &rect);
@@ -145,70 +147,77 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 (HMENU)IDB_pencil,
                 hInst,
                 NULL);
-                //SendMessage(hPencil,BST_CHECKED,wParam,lParam);
-                hbit = LoadBitmap(hInst, "Bit1");
-                SendMessage(hPencil, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
+                SendMessage(hPencil, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hImageBttn);
 
+            hImageBttn = LoadBitmap(GetModuleHandle(0), MAKEINTRESOURCE(IDB_LINE));
             hLine = CreateWindowEx(
                 0,
                 "Button",
                 NULL,
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
                 50, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_line,
                 hInst,
                 NULL);
-                //SendMessage(hLine,BST_CHECKED,wParam,lParam);
+                SendMessage(hLine, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hImageBttn);
 
+            hImageBttn = LoadBitmap(GetModuleHandle(0), MAKEINTRESOURCE(IDB_BEZIER));
             hBezier = CreateWindowEx(
                 0,
                 "Button",
                 NULL,
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
                 90, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_bezier,
                 hInst,
                 NULL);
+                SendMessage(hBezier, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hImageBttn);
 
+            hImageBttn = LoadBitmap(GetModuleHandle(0), MAKEINTRESOURCE(IDB_RECTANGLE));
             hRectangle = CreateWindowEx(
                 0,
                 "Button",
                 NULL,
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
                 130, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_rectangle,
                 hInst,
                 NULL);
+                SendMessage(hRectangle, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hImageBttn);
 
+            hImageBttn = LoadBitmap(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ELLIPSE));
             hEllipse = CreateWindowEx(
                 0,
                 "Button",
                 NULL,
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
                 170, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_ellipse,
                 hInst,
                 NULL);
+                SendMessage(hEllipse, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hImageBttn);
 
+            hImageBttn = LoadBitmap(GetModuleHandle(0), MAKEINTRESOURCE(IDB_ERASER));
             hEraser = CreateWindowEx(
                 0,
                 "Button",
                 NULL,
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
                 210, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_eraser,
                 hInst,
                 NULL);
+                SendMessage(hEraser, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hImageBttn);
 
             hFill = CreateWindowEx(
                 0,
@@ -569,7 +578,6 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     return 0;
 }
 
-//updates the fill and border color
 void updateColorControls(HDC hdc, COLORREF rgb, int xLeft, int yTop)
 {
     HBRUSH hBrush = CreateSolidBrush(rgb);
