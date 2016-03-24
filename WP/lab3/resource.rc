@@ -1,2 +1,7 @@
-Bit BITMAP bitmap.bmp
+Bit BITMAP pencil.bmp
+Bit BITMAP line.bmp
+Bit BITMAP ellipse.bmp
+Bit BITMAP eraser.bmp
+Bit BITMAP bezier.bmp
+Bit BITMAP rectangle.bmp
 IDI_icon ICON "icon.ico"

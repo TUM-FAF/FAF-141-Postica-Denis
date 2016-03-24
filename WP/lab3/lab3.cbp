@@ -28,9 +28,14 @@
 			<Add library="kernel32" />
 			<Add library="comctl32" />
 		</Linker>
-		<Unit filename="bitmap.bmp" />
+		<Unit filename="bezier.bmp" />
+		<Unit filename="ellipse.bmp" />
+		<Unit filename="eraser.bmp" />
 		<Unit filename="icon.ico" />
 		<Unit filename="lab3.cpp" />
+		<Unit filename="line.bmp" />
+		<Unit filename="pencil.bmp" />
+		<Unit filename="rectangle.bmp" />
 		<Unit filename="resource.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />

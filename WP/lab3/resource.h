@@ -1,2 +1,11 @@
-#define IDB_EXERCISING 100
-#define IDI_icon       110
+#define IDI_icon   100
+#define IDB_pencil 101
+#define IDB_line 102
+#define IDB_rectangle 103
+#define IDB_ellipse 104
+#define IDB_eraser 108
+#define IDB_bezier 109
+#define IDB_clear 110
+#define IDB_fill 111
+#define HK_dellipse 112
+#define HK_dblue 113
