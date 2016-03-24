@@ -10,3 +10,10 @@
 #define HK_dellipse 112
 #define HK_dblue 113
 #define IDB_toolsg 114
+#define IDB_PENCIL 115
+#define IDB_LINE 116
+#define IDB_BEZIER 117
+#define IDB_RECTANGLE 118
+#define IDB_ELLIPSE 119
+#define IDB_ERASER 120
+#define IDB_colorg 121

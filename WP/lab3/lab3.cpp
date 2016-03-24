@@ -1,19 +1,11 @@
-#if defined(UNICODE) && !defined(_UNICODE)
-    #define _UNICODE
-#elif defined(_UNICODE) && !defined(UNICODE)
-    #define UNICODE
-#endif
-
 #include <tchar.h>
 #include <windows.h>
 #include <windowsx.h>
 #include "resource.h"
 
-/*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
-/*  Make the class name into a global variable  */
-TCHAR szClassName[ ] = _T("CodeBlocksWindowsApp");
+TCHAR szClassName[ ] = _T("WindowsApp");
 HINSTANCE hInst;
 
 void updateColorControls(HDC, COLORREF, int, int);
@@ -37,92 +29,65 @@ COLORREF colorSelect(HWND hwnd, COLORREF color)
     {
         color = cc.rgbResult;
     }
-    //InvalidateRect(hwnd, NULL,FALSE);
     return color;
 }
-
-// Redirecting child messages to parent window
-WNDPROC GroupBoxProc;
-LONG CALLBACK GroupRelay(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    if(msg == WM_COMMAND || msg == WM_NOTIFY){
-        return SendMessage(GetParent(hwnd), msg, wParam, lParam);
-    }
-
-    return CallWindowProc(GroupBoxProc, hwnd, msg, wParam, lParam);
-}
-
 
 int WINAPI WinMain (HINSTANCE hThisInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR lpszArgument,
                      int nCmdShow)
 {
-    HWND hwnd;               /* This is the handle for our window */
-    MSG messages;            /* Here messages to the application are saved */
-    WNDCLASSEX wincl;        /* Data structure for the windowclass */
+    HWND hwnd;
+    MSG messages;
+    WNDCLASSEX wincl;
 
-    /* The Window structure */
     wincl.hInstance = hThisInstance;
     wincl.lpszClassName = szClassName;
-    wincl.lpfnWndProc = WindowProcedure;      /* This function is called by windows */
-    wincl.style = CS_DBLCLKS;                 /* Catch double-clicks */
+    wincl.lpfnWndProc = WindowProcedure;
+    wincl.style = CS_DBLCLKS;
     wincl.cbSize = sizeof (WNDCLASSEX);
 
-    /* Use default icon and mouse-pointer */
-    wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
-    wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hIcon = LoadIcon (hInst, MAKEINTRESOURCE(IDI_icon));
+    wincl.hIconSm = LoadIcon (hInst, MAKEINTRESOURCE(IDI_icon));
     wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
-    wincl.lpszMenuName = NULL;                 /* No menu */
-    wincl.cbClsExtra = 0;                      /* No extra bytes after the window class */
-    wincl.cbWndExtra = 0;                      /* structure or the window instance */
-    /* Use Windows's default colour as the background of the window */
-    wincl.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(102,205,170));
+    wincl.lpszMenuName = NULL;
+    wincl.cbClsExtra = 0;
+    wincl.cbWndExtra = 0;
 
-    /* Register the window class, and if it fails quit the program */
+    wincl.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(150,150,200));;
+
     if (!RegisterClassEx (&wincl))
         return 0;
 
-    /* The class is registered, let's create the program*/
     hwnd = CreateWindowEx (
-           0,                   /* Extended possibilites for variation */
-           szClassName,         /* Classname */
-           _T("WP lab3"),       /* Title Text */
-           WS_OVERLAPPEDWINDOW| WS_BORDER | WS_SYSMENU, /* default window */
-           CW_USEDEFAULT,       /* Windows decides the position */
-           CW_USEDEFAULT,       /* where the window ends up on the screen */
-           800,                 /* The programs width */
-           550,                 /* and height in pixels */
-           HWND_DESKTOP,        /* The window is a child-window to desktop */
-           NULL,                /* No menu */
-           hThisInstance,       /* Program Instance handler */
-           NULL                 /* No Window Creation data */
+           0,
+           szClassName,
+           _T("EasyPaint3"),
+           WS_OVERLAPPEDWINDOW| WS_BORDER | WS_SYSMENU,
+           CW_USEDEFAULT,
+           CW_USEDEFAULT,
+           800,
+           600,
+           HWND_DESKTOP,
+           NULL,
+           hThisInstance,
+           NULL
            );
 
-    /* Make the window visible on the screen */
     ShowWindow (hwnd, nCmdShow);
-    UpdateWindow(hwnd); //make sure the window is updated correctly
+    UpdateWindow(hwnd);
 
-    /* Run the message loop. It will run until GetMessage() returns 0 */
     while (GetMessage (&messages, NULL, 0, 0))
     {
-        /* Translate virtual-key messages into character messages */
         TranslateMessage(&messages);
-        /* Send message to WindowProcedure */
         DispatchMessage(&messages);
     }
-
-    /* The program return-value is 0 - The value that PostQuitMessage() gave */
     return messages.wParam;
 }
 
-
-/*  This function is called by the Windows function DispatchMessage()  */
-
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static HWND hPencil, hLine, hBezier, hRectangle, hEllipse, hEraser,
-                 hFill, hBorderW, hEraserW, hClear;
+    static HWND hPencil, hLine, hBezier, hRectangle, hEllipse, hEraser, hFill, hBorderW, hEraserW, hClear;
 
     RECT rect ;
     PAINTSTRUCT ps;
@@ -131,29 +96,21 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     int screenW, screenH;
     int xMouse, yMouse;
 
-    // Color preview rectangles
-    int xFillPreview = 115;
-    int yFillPreview = 330;
-    int xStrokePreview = 115;
-    int yStrokePreview = 355;
+    int xFillPreview = 200;
+    int yFillPreview = 515;
+    int xStrokePreview = 310;
+    int yStrokePreview = 515;
 
     HDC hdcMem;
     BITMAP bitmap;
-    HBITMAP hbmpBitmapImage = NULL;
-    hbmpBitmapImage = (HBITMAP)LoadImage(hInst, "bitmap.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-    GetObject(hbmpBitmapImage, sizeof(bitmap), &bitmap);
+    HBITMAP hbit;
 
-    static RECT drawingArea = {170, 17, 780, 475};
+    static RECT drawingArea = {25, 55, 750, 500};
     static RECT fillColorRect = {xFillPreview, yFillPreview, xFillPreview + 25, yFillPreview + 20};
     static RECT borderColorRect = {xStrokePreview, yStrokePreview, xStrokePreview + 25, yStrokePreview + 20};
 
-    static RECT redGradientRect = {170, 480, 370, 505};
-    static RECT greenGradientRect = {375, 480, 575, 505};
-    static RECT blueGradientRect = {580, 480, 780, 505};
-
     static RECT tempRect;
 
-    // Drawing stuff
     HBRUSH hBrush;
     static POINT pointPen;
     POINT point;
@@ -169,7 +126,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     HPEN borderPen;
     HBRUSH fillBrush;
 
-    switch (message)                  /* handle the messages */
+    switch (message)
     {
 
         case WM_CREATE:
@@ -177,171 +134,161 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             screenH = GetSystemMetrics(SM_CYSCREEN);
             GetWindowRect(hwnd, &rect);
             SetWindowPos(hwnd, 0, (screenW - rect.right)/2, (screenH - rect.bottom)/2, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
-
             hPencil = CreateWindowEx(
                 0,
                 "Button",
-                "Pencil",
-                WS_VISIBLE| WS_CHILD|BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                NULL,
+                WS_VISIBLE| WS_CHILD|BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP ,
                 10, 15,
-                120, 20,
+                32, 32,
                 hwnd,
                 (HMENU)IDB_pencil,
                 hInst,
                 NULL);
-                SendMessage(hPencil,BST_CHECKED,wParam,lParam);
-             // Line tool
+                //SendMessage(hPencil,BST_CHECKED,wParam,lParam);
+                hbit = LoadBitmap(hInst, "Bit1");
+                SendMessage(hPencil, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
+
             hLine = CreateWindowEx(
                 0,
                 "Button",
-                "Line",
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-                10, 35,
-                120, 20,
+                NULL,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                50, 15,
+                32, 32,
                 hwnd,
                 (HMENU)IDB_line,
                 hInst,
                 NULL);
-                SendMessage(hLine,BST_CHECKED,wParam,lParam);
+                //SendMessage(hLine,BST_CHECKED,wParam,lParam);
 
-            // Bezier tool
             hBezier = CreateWindowEx(
                 0,
                 "Button",
-                "Bezier",
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-                10, 55,
-                120, 20,
+                NULL,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                90, 15,
+                32, 32,
                 hwnd,
                 (HMENU)IDB_bezier,
                 hInst,
                 NULL);
 
-            // Rectangle tool
             hRectangle = CreateWindowEx(
                 0,
                 "Button",
-                "Rectangle",
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-                10, 75,
-                120, 20,
+                NULL,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                130, 15,
+                32, 32,
                 hwnd,
                 (HMENU)IDB_rectangle,
                 hInst,
                 NULL);
 
-            // Ellipse tool
             hEllipse = CreateWindowEx(
                 0,
                 "Button",
-                "Ellipse",
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-                10, 95,
-                120, 20,
+                NULL,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                170, 15,
+                32, 32,
                 hwnd,
                 (HMENU)IDB_ellipse,
                 hInst,
                 NULL);
 
-            // Eraser tool
             hEraser = CreateWindowEx(
                 0,
                 "Button",
-                "Eraser",
-                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
-                10, 115,
-                120, 20,
+                NULL,
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
+                210, 15,
+                32, 32,
                 hwnd,
                 (HMENU)IDB_eraser,
                 hInst,
                 NULL);
 
-            // Fill checkbox
             hFill = CreateWindowEx(
                 0,
                 "Button",
                 "Fill object",
                 WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX,
-                10, 15,
-                120, 20,
+                10, 515,
+                100, 20,
                 hwnd,
                 (HMENU)IDB_fill,
                 hInst,
                 NULL);
 
-            // Fill color label
             CreateWindowEx(
                 0,
                 "Static",
                 "Fill color",
                 WS_VISIBLE | WS_CHILD | SS_LEFT,
-                10, 40,
-                90, 20,
+                120, 515,
+                75, 20,
                 hwnd,
                 (HMENU)0,
                 hInst,
                 NULL);
 
-            // Border color label
             CreateWindowEx(
                 0,
                 "Static",
-                "Border color",
+                "Line color",
                 WS_VISIBLE | WS_CHILD | SS_LEFT,
-                10, 65,
-                90, 20,
+                230, 515,
+                70, 20,
                 hwnd,
                 (HMENU)0,
                 hInst,
                 NULL);
 
-            // Border width label
             CreateWindowEx(
                 0,
                 "Static",
                 "Border width",
                 WS_VISIBLE | WS_CHILD | SS_LEFT,
-                10, 15,
+                350, 515,
                 100, 20,
                 hwnd,
                 (HMENU)0,
                 hInst,
                 NULL);
 
-            // Border width input
             hBorderW = CreateWindowEx(
                 0,
                 "Edit",
                 "1",
                 WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER,
-                100, 15,
-                25, 20,
+                460, 515,
+                40, 20,
                 hwnd,
                 (HMENU)0,
                 hInst,
                 NULL);
 
-            // Eraser width label
             CreateWindowEx(
                 0,
                 "Static",
                 "Eraser width",
                 WS_VISIBLE | WS_CHILD | SS_LEFT,
-                10, 40,
+                515, 515,
                 100, 20,
                 hwnd,
                 (HMENU)0,
                 hInst,
                 NULL);
 
-            // Eraser width input
             hEraserW = CreateWindowEx(
                 0,
                 "Edit",
                 "1",
                 WS_VISIBLE | WS_CHILD | WS_BORDER | SS_CENTER,
-                100, 40,
-                25, 20,
+                620, 515,
+                40, 20,
                 hwnd,
                 (HMENU)0,
                 hInst,
@@ -352,45 +299,25 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 "Button",
                 "Clear",
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-                15, 480,
-                140, 25,
+                680, 515,
+                100, 20,
                 hwnd,
                 (HMENU)IDB_clear,
                 GetModuleHandle(NULL),
                 NULL);
 
-            RegisterHotKey(hwnd, HK_dellipse, MOD_CONTROL, 0x45); //CTRL+E
-            RegisterHotKey(hwnd, HK_dblue, MOD_CONTROL, 0x43); // CTRL+C
+            RegisterHotKey(hwnd, HK_dellipse, MOD_CONTROL, 0x45);
+            RegisterHotKey(hwnd, HK_dblue, MOD_CONTROL, 0x43);
             break;
-
 
         case WM_PAINT:
             hdc = BeginPaint(hwnd, &ps);
-
             updateColorControls(hdc, fillColor, xFillPreview, yFillPreview);
-
             updateColorControls(hdc, borderColor, xStrokePreview, yStrokePreview);
-
-            hdcMem = CreateCompatibleDC(hdc);
-            SelectObject(hdcMem, hbmpBitmapImage);
-            BitBlt(hdc, 15, 15, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
-            DeleteDC(hdcMem);
 
             SelectObject(hdc, CreatePen(PS_SOLID, 1, RGB(0,0,0)));
             SelectObject(hdc, (HBRUSH)GetStockObject(WHITE_BRUSH));
             Rectangle(hdc, drawingArea.left, drawingArea.top, drawingArea.right, drawingArea.bottom);
-
-            tempRect.top = redGradientRect.top;
-            tempRect.bottom = redGradientRect.bottom;
-            fillWithGradient(hdc, hBrush, tempRect, redGradientRect, 0);
-
-            tempRect.top = greenGradientRect.top;
-            tempRect.bottom = greenGradientRect.bottom;
-            fillWithGradient(hdc, hBrush, tempRect, greenGradientRect, 1);
-
-            tempRect.top = blueGradientRect.top;
-            tempRect.bottom = blueGradientRect.bottom;
-            fillWithGradient(hdc, hBrush, tempRect, blueGradientRect, 2);
 
             EndPaint(hwnd, &ps);
             break;

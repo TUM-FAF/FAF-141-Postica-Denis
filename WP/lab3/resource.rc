@@ -1,7 +1,9 @@
-Bit BITMAP pencil.bmp
-Bit BITMAP line.bmp
-Bit BITMAP ellipse.bmp
-Bit BITMAP eraser.bmp
-Bit BITMAP bezier.bmp
-Bit BITMAP rectangle.bmp
+#include <wingdi.h>
+#include "resource.h"
+IDB_PENCIL BITMAP pencil.bmp
+IDB_LINE BITMAP line.bmp
+IDB_ELLIPSE BITMAP ellipse.bmp
+IDB_ERASER BITMAP eraser.bmp
+IDB_BEZIER BITMAP bezier.bmp
+IDB_RECTANGLE BITMAP rectangle.bmp
 IDI_icon ICON "icon.ico"
