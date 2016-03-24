@@ -28,8 +28,9 @@
 			<Add library="kernel32" />
 			<Add library="comctl32" />
 		</Linker>
-		<Unit filename="main.cpp" />
-		<Unit filename="manifest.xml" />
+		<Unit filename="bitmap.bmp" />
+		<Unit filename="icon.ico" />
+		<Unit filename="lab3.cpp" />
 		<Unit filename="resource.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
