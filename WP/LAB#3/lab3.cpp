@@ -141,7 +141,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 "Button",
                 NULL,
                 WS_VISIBLE| WS_CHILD|BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP ,
-                10, 15,
+                25, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_pencil,
@@ -155,7 +155,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 "Button",
                 NULL,
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
-                50, 15,
+                65, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_line,
@@ -169,7 +169,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 "Button",
                 NULL,
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
-                90, 15,
+                105, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_bezier,
@@ -183,7 +183,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 "Button",
                 NULL,
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
-                130, 15,
+                145, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_rectangle,
@@ -197,7 +197,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 "Button",
                 NULL,
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
-                170, 15,
+                185, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_ellipse,
@@ -211,7 +211,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 "Button",
                 NULL,
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | BS_PUSHLIKE | BS_BITMAP,
-                210, 15,
+                225, 15,
                 32, 32,
                 hwnd,
                 (HMENU)IDB_eraser,
@@ -566,13 +566,13 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         }
 
         case WM_CLOSE:
-            if(MessageBox(hwnd, "Do you want to exit the application?", "Lab#3 Drawing App", MB_YESNO) == IDYES) DestroyWindow(hwnd);
+            if(MessageBox(hwnd, "Close application?", "Quit", MB_YESNO) == IDYES) DestroyWindow(hwnd);
             break;
 
         case WM_DESTROY:
-            PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
+            PostQuitMessage (0);
             break;
-        default:                      /* for messages that we don't deal with */
+        default:
             return DefWindowProc (hwnd, message, wParam, lParam);
     }
     return 0;
