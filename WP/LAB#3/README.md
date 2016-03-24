@@ -16,5 +16,5 @@
  
 ###What have I done
 I have created a Windows application that can draw lines, bezier curves, plane objects. You
-also can ll objects with gradient and change the color of the lines. The mouse can be used as an
+also can fill objects with gradient and change the color of the lines. The mouse can be used as an
 eraser.
