@@ -1,11 +1,19 @@
+#if defined(UNICODE) && !defined(_UNICODE)
+    #define _UNICODE
+#elif defined(_UNICODE) && !defined(UNICODE)
+    #define UNICODE
+#endif
+
 #include <tchar.h>
 #include <windows.h>
 #include <windowsx.h>
 #include "resource.h"
 
+/*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
-TCHAR szClassName[ ] = _T("WindowsApp");
+/*  Make the class name into a global variable  */
+TCHAR szClassName[ ] = _T("CodeBlocksWindowsApp");
 HINSTANCE hInst;
 
 void updateColorControls(HDC, COLORREF, int, int);
@@ -29,9 +37,11 @@ COLORREF colorSelect(HWND hwnd, COLORREF color)
     {
         color = cc.rgbResult;
     }
+    //InvalidateRect(hwnd, NULL,FALSE);
     return color;
 }
 
+// Redirecting child messages to parent window
 WNDPROC GroupBoxProc;
 LONG CALLBACK GroupRelay(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -42,63 +52,76 @@ LONG CALLBACK GroupRelay(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return CallWindowProc(GroupBoxProc, hwnd, msg, wParam, lParam);
 }
 
+
 int WINAPI WinMain (HINSTANCE hThisInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR lpszArgument,
                      int nCmdShow)
 {
-    HWND hwnd;
-    MSG messages;
-    WNDCLASSEX wincl;
+    HWND hwnd;               /* This is the handle for our window */
+    MSG messages;            /* Here messages to the application are saved */
+    WNDCLASSEX wincl;        /* Data structure for the windowclass */
 
+    /* The Window structure */
     wincl.hInstance = hThisInstance;
     wincl.lpszClassName = szClassName;
-    wincl.lpfnWndProc = WindowProcedure;
-    wincl.style = CS_DBLCLKS;
+    wincl.lpfnWndProc = WindowProcedure;      /* This function is called by windows */
+    wincl.style = CS_DBLCLKS;                 /* Catch double-clicks */
     wincl.cbSize = sizeof (WNDCLASSEX);
 
+    /* Use default icon and mouse-pointer */
     wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
     wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
     wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
-    wincl.lpszMenuName = NULL;
-    wincl.cbClsExtra = 0;
-    wincl.cbWndExtra = 0;
-
+    wincl.lpszMenuName = NULL;                 /* No menu */
+    wincl.cbClsExtra = 0;                      /* No extra bytes after the window class */
+    wincl.cbWndExtra = 0;                      /* structure or the window instance */
+    /* Use Windows's default colour as the background of the window */
     wincl.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(102,205,170));
 
+    /* Register the window class, and if it fails quit the program */
     if (!RegisterClassEx (&wincl))
         return 0;
 
+    /* The class is registered, let's create the program*/
     hwnd = CreateWindowEx (
-           0,
-           szClassName,
-           _T("EasyPaint"),
-           WS_OVERLAPPEDWINDOW| WS_BORDER | WS_SYSMENU,
-           CW_USEDEFAULT,
-           CW_USEDEFAULT,
-           800,
-           600,
-           HWND_DESKTOP,
-           NULL,
-           hThisInstance,
-           NULL
+           0,                   /* Extended possibilites for variation */
+           szClassName,         /* Classname */
+           _T("WP lab3"),       /* Title Text */
+           WS_OVERLAPPEDWINDOW| WS_BORDER | WS_SYSMENU, /* default window */
+           CW_USEDEFAULT,       /* Windows decides the position */
+           CW_USEDEFAULT,       /* where the window ends up on the screen */
+           800,                 /* The programs width */
+           550,                 /* and height in pixels */
+           HWND_DESKTOP,        /* The window is a child-window to desktop */
+           NULL,                /* No menu */
+           hThisInstance,       /* Program Instance handler */
+           NULL                 /* No Window Creation data */
            );
 
+    /* Make the window visible on the screen */
     ShowWindow (hwnd, nCmdShow);
-    UpdateWindow(hwnd);
+    UpdateWindow(hwnd); //make sure the window is updated correctly
 
+    /* Run the message loop. It will run until GetMessage() returns 0 */
     while (GetMessage (&messages, NULL, 0, 0))
     {
+        /* Translate virtual-key messages into character messages */
         TranslateMessage(&messages);
+        /* Send message to WindowProcedure */
         DispatchMessage(&messages);
     }
 
+    /* The program return-value is 0 - The value that PostQuitMessage() gave */
     return messages.wParam;
 }
 
+
+/*  This function is called by the Windows function DispatchMessage()  */
+
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HWND  hPencil, hLine, hBezier, hRectangle, hEllipse, hEraser,
+    static HWND hPencil, hLine, hBezier, hRectangle, hEllipse, hEraser,
                  hFill, hBorderW, hEraserW, hClear;
 
     RECT rect ;
@@ -108,6 +131,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     int screenW, screenH;
     int xMouse, yMouse;
 
+    // Color preview rectangles
     int xFillPreview = 115;
     int yFillPreview = 330;
     int xStrokePreview = 115;
@@ -115,7 +139,9 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
     HDC hdcMem;
     BITMAP bitmap;
-    HBITMAP hbit,hbit1,hbit2,hbit3,hbit4,hbit5;
+    HBITMAP hbmpBitmapImage = NULL;
+    hbmpBitmapImage = (HBITMAP)LoadImage(hInst, "bitmap.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    GetObject(hbmpBitmapImage, sizeof(bitmap), &bitmap);
 
     static RECT drawingArea = {170, 17, 780, 475};
     static RECT fillColorRect = {xFillPreview, yFillPreview, xFillPreview + 25, yFillPreview + 20};
@@ -127,6 +153,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
     static RECT tempRect;
 
+    // Drawing stuff
     HBRUSH hBrush;
     static POINT pointPen;
     POINT point;
@@ -142,7 +169,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     HPEN borderPen;
     HBRUSH fillBrush;
 
-    switch (message)
+    switch (message)                  /* handle the messages */
     {
 
         case WM_CREATE:
@@ -154,87 +181,82 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             hPencil = CreateWindowEx(
                 0,
                 "Button",
-                NULL,
-                WS_VISIBLE | WS_CHILD | BS_BITMAP,
+                "Pencil",
+                WS_VISIBLE| WS_CHILD|BS_AUTORADIOBUTTON | BS_PUSHLIKE ,
                 10, 15,
                 120, 20,
                 hwnd,
                 (HMENU)IDB_pencil,
                 hInst,
                 NULL);
-            hbit = LoadBitmap(hInst, "pencil");
-            SendMessage(hPencil, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
-
+                SendMessage(hPencil,BST_CHECKED,wParam,lParam);
+             // Line tool
             hLine = CreateWindowEx(
                 0,
                 "Button",
-                NULL,
-                WS_VISIBLE | WS_CHILD | BS_BITMAP,
+                "Line",
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
                 10, 35,
                 120, 20,
                 hwnd,
                 (HMENU)IDB_line,
                 hInst,
                 NULL);
-            hbit1 = LoadBitmap(hInst, "line");
-            SendMessage(hLine, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
+                SendMessage(hLine,BST_CHECKED,wParam,lParam);
 
+            // Bezier tool
             hBezier = CreateWindowEx(
                 0,
                 "Button",
-                NULL,
-                WS_VISIBLE | WS_CHILD | BS_BITMAP,
+                "Bezier",
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
                 10, 55,
                 120, 20,
                 hwnd,
                 (HMENU)IDB_bezier,
                 hInst,
                 NULL);
-            hbit2 = LoadBitmap(hInst, "bezier");
-            SendMessage(hBezier, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
 
+            // Rectangle tool
             hRectangle = CreateWindowEx(
                 0,
                 "Button",
-                NULL,
-                WS_VISIBLE | WS_CHILD | BS_BITMAP,
+                "Rectangle",
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
                 10, 75,
                 120, 20,
                 hwnd,
                 (HMENU)IDB_rectangle,
                 hInst,
                 NULL);
-            hbit3 = LoadBitmap(hInst, "rectangle");
-            SendMessage(hRectangle, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
 
+            // Ellipse tool
             hEllipse = CreateWindowEx(
                 0,
                 "Button",
-                NULL,
-                WS_VISIBLE | WS_CHILD | BS_BITMAP,
+                "Ellipse",
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
                 10, 95,
                 120, 20,
                 hwnd,
                 (HMENU)IDB_ellipse,
                 hInst,
                 NULL);
-            hbit4 = LoadBitmap(hInst, "ellipse");
-            SendMessage(hEllipse, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
 
+            // Eraser tool
             hEraser = CreateWindowEx(
                 0,
                 "Button",
-                NULL,
-                WS_VISIBLE | WS_CHILD | BS_BITMAP,
+                "Eraser",
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON,
                 10, 115,
                 120, 20,
                 hwnd,
                 (HMENU)IDB_eraser,
                 hInst,
                 NULL);
-            hbit5 = LoadBitmap(hInst, "eraser");
-            SendMessage(hEraser, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbit);
 
+            // Fill checkbox
             hFill = CreateWindowEx(
                 0,
                 "Button",
@@ -260,6 +282,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 hInst,
                 NULL);
 
+            // Border color label
             CreateWindowEx(
                 0,
                 "Static",
@@ -272,6 +295,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 hInst,
                 NULL);
 
+            // Border width label
             CreateWindowEx(
                 0,
                 "Static",
@@ -284,6 +308,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 hInst,
                 NULL);
 
+            // Border width input
             hBorderW = CreateWindowEx(
                 0,
                 "Edit",
@@ -296,6 +321,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 hInst,
                 NULL);
 
+            // Eraser width label
             CreateWindowEx(
                 0,
                 "Static",
@@ -308,7 +334,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 hInst,
                 NULL);
 
-            hEraserW= CreateWindowEx(
+            // Eraser width input
+            hEraserW = CreateWindowEx(
                 0,
                 "Edit",
                 "1",
@@ -336,31 +363,72 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             RegisterHotKey(hwnd, HK_dblue, MOD_CONTROL, 0x43); // CTRL+C
             break;
 
+
         case WM_PAINT:
             hdc = BeginPaint(hwnd, &ps);
+
             updateColorControls(hdc, fillColor, xFillPreview, yFillPreview);
+
             updateColorControls(hdc, borderColor, xStrokePreview, yStrokePreview);
+
+            hdcMem = CreateCompatibleDC(hdc);
+            SelectObject(hdcMem, hbmpBitmapImage);
+            BitBlt(hdc, 15, 15, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
+            DeleteDC(hdcMem);
+
             SelectObject(hdc, CreatePen(PS_SOLID, 1, RGB(0,0,0)));
             SelectObject(hdc, (HBRUSH)GetStockObject(WHITE_BRUSH));
             Rectangle(hdc, drawingArea.left, drawingArea.top, drawingArea.right, drawingArea.bottom);
+
             tempRect.top = redGradientRect.top;
             tempRect.bottom = redGradientRect.bottom;
             fillWithGradient(hdc, hBrush, tempRect, redGradientRect, 0);
+
             tempRect.top = greenGradientRect.top;
             tempRect.bottom = greenGradientRect.bottom;
             fillWithGradient(hdc, hBrush, tempRect, greenGradientRect, 1);
+
             tempRect.top = blueGradientRect.top;
             tempRect.bottom = blueGradientRect.bottom;
             fillWithGradient(hdc, hBrush, tempRect, blueGradientRect, 2);
+
             EndPaint(hwnd, &ps);
             break;
 
          case WM_COMMAND:
             switch (LOWORD(wParam))
             {
-                xMouse = GET_X_LPARAM(lParam);
-                yMouse = GET_Y_LPARAM(lParam);
-                if(xMouse >= fillColorRect.left && xMouse <= fillColorRect.right)
+                case IDB_clear:
+                    Button_SetCheck(hPencil, BST_UNCHECKED);
+                    Button_SetCheck(hLine, BST_UNCHECKED);
+                    Button_SetCheck(hBezier, BST_UNCHECKED);
+                    Button_SetCheck(hRectangle, BST_UNCHECKED);
+                    Button_SetCheck(hEllipse, BST_UNCHECKED);
+                    Button_SetCheck(hEraser, BST_UNCHECKED);
+
+                    InvalidateRect(hwnd, &drawingArea, FALSE);
+                    InvalidateRect(hwnd, &drawingArea, TRUE);
+                    break;
+                default:
+                    DefWindowProc(hwnd, WM_COMMAND, wParam, lParam);
+                    break;
+            }
+            break;
+
+         case WM_GETMINMAXINFO:
+         {
+             LPMINMAXINFO mmi = (LPMINMAXINFO)lParam;
+             mmi->ptMinTrackSize.x = 800;
+             mmi->ptMinTrackSize.y = 550;
+             mmi->ptMaxTrackSize.x = 850;
+             mmi->ptMaxTrackSize.y = 600;
+             break;
+         }
+         case WM_LBUTTONDOWN:
+            xMouse = GET_X_LPARAM(lParam);
+            yMouse = GET_Y_LPARAM(lParam);
+
+            if(xMouse >= fillColorRect.left && xMouse <= fillColorRect.right)
             {
                 if(yMouse >= fillColorRect.top && yMouse <= fillColorRect.bottom)
                 {
@@ -375,7 +443,6 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 return 0;
             }
 
-            //when pressed in the drawing area
             if( (xMouse > drawingArea.left) && (xMouse < drawingArea.right) &&
                 (yMouse > drawingArea.top) && (yMouse < drawingArea.bottom) )
             {
@@ -383,21 +450,36 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 point = getCurrentPointPosition(xMouse, yMouse, drawingArea, width);
                 xMouse = point.x;
                 yMouse = point.y;
-            }
-                case IDB_clear:
-                    InvalidateRect(hwnd, &drawingArea, FALSE);
-                    InvalidateRect(hwnd, &drawingArea, TRUE);
-                    break;
-                case IDB_pencil:
+
+                if((wParam == MK_LBUTTON) && (Button_GetCheck(hPencil) == BST_CHECKED))
+                {
                     pointPen.x = xMouse;
                     pointPen.y = yMouse;
-                    break;
-                case IDB_line:
+                }
+
+                if((wParam == MK_LBUTTON) && (Button_GetCheck(hLine) == BST_CHECKED))
+                {
                     line.x = xMouse;
                     line.y = yMouse;
                     lineStarted = true;
-                    break;
-                case IDB_bezier:
+                }
+
+                if((wParam == MK_LBUTTON) && (Button_GetCheck(hRectangle) == BST_CHECKED))
+                {
+                    rectangle.left = xMouse;
+                    rectangle.top = yMouse;
+                    rectangleStarted = true;
+                }
+
+                if((wParam == MK_LBUTTON) && (Button_GetCheck(hEllipse) == BST_CHECKED))
+                {
+                    ellipse.left = xMouse;
+                    ellipse.top = yMouse;
+                    ellipseStarted = true;
+                }
+
+                if((wParam == MK_LBUTTON) && (Button_GetCheck(hBezier) == BST_CHECKED))
+                {
                     if(bezierStage == 0)
                     {
                         bezierPoints[0] = point;
@@ -408,35 +490,10 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                         bezierPoints[2] = point;
                         bezierStage = 3;
                     }
-                    break;
-                case IDB_rectangle:
-                    rectangle.left = xMouse;
-                    rectangle.top = yMouse;
-                    rectangleStarted = true;
-                    break;
-                case IDB_ellipse:
-                    ellipse.left = xMouse;
-                    ellipse.top = yMouse;
-                    ellipseStarted = true;
-                case IDB_eraser:
-                    InvalidateRect(hwnd, &drawingArea, FALSE);
-                    InvalidateRect(hwnd, &drawingArea, TRUE);
-                    break;
-                default:
-                    DefWindowProc(hwnd, WM_COMMAND, wParam, lParam);
-                    break;
+                }
             }
             break;
 
-         case WM_GETMINMAXINFO:
-         {
-             LPMINMAXINFO mmi = (LPMINMAXINFO)lParam;
-             mmi->ptMinTrackSize.x = 800;
-             mmi->ptMinTrackSize.y = 600;
-             mmi->ptMaxTrackSize.x = 850;
-             mmi->ptMaxTrackSize.y = 650;
-             break;
-         }
         case WM_LBUTTONUP:
             xMouse = GET_X_LPARAM(lParam);
             yMouse = GET_Y_LPARAM(lParam);
@@ -537,11 +594,21 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             }
             break;
 
+        case WM_CTLCOLORSTATIC:
+            {
+                HDC hDC = (HDC)wParam;
+                SetBkColor(hDC, GetSysColor(COLOR_WINDOW));
+                SetTextColor(hDC, RGB(255,69,0));
+                SetBkMode(hDC, TRANSPARENT);
+                return (INT_PTR)CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
+            }
+            break;
+
         case WM_HOTKEY:
         {
             switch(wParam)
             {
-            case HK_dellipse:
+                case HK_dellipse:
 
                     Button_SetCheck(hPencil, BST_UNCHECKED);
                     Button_SetCheck(hLine, BST_UNCHECKED);

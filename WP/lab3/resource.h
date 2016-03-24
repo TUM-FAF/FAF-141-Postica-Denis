@@ -9,3 +9,4 @@
 #define IDB_fill 111
 #define HK_dellipse 112
 #define HK_dblue 113
+#define IDB_toolsg 114
