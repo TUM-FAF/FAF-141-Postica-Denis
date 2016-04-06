@@ -1,4 +1,4 @@
-#include "objects.h"
+#include "obj.h"
 
 Objects::Objects(POINT center, const int &speed)
  {

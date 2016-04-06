@@ -1,4 +1,4 @@
-#include "objects.h"
+#include "obj.h"
 
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
