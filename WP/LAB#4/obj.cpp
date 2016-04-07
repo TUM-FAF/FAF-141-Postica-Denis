@@ -77,11 +77,11 @@ bool objs::Collision(const RECT &rect)
 
 bool Interaction(objs &obj1, objs &obj2) {
 
-    float distance;
+    float d;
 
-    distance = sqrt( pow(obj1.center.x-obj2.center.x,2) + pow(obj1.center.y-obj2.center.y,2) );
+    d = sqrt( pow(obj1.center.x-obj2.center.x,2) + pow(obj1.center.y-obj2.center.y,2) );
 
-    if ( distance < 53 )
+    if ( d < 53 )
     {
     obj1.Accelerate(-obj1.xSpeed, -obj1.ySpeed);
     obj2.Accelerate(-obj2.xSpeed, -obj2.ySpeed);

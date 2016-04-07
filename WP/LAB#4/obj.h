@@ -28,12 +28,9 @@ public:
 
 class Circle : public objs {
 public:
-    Circle(POINT center,const int &speed): objs(center,speed)
-    {
-
-    }
+    Circle(POINT center,const int &speed): objs(center,speed){}
     bool Move(const HDC &hdc,const RECT& rect,HBRUSH &hBrush);
 };
 
-bool Interaction(objs &alfa,objs &beta);
+bool Interaction(objs &obj1, objs &obj2);
 #endif
