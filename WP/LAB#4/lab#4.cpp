@@ -57,6 +57,7 @@ COLORREF clr;
 
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    int cnt;
     static HDC hdc,hdcMem;
     static PAINTSTRUCT ps;
     static RECT rect;
@@ -91,11 +92,31 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             POINT coord;
             coord.x = LOWORD(lParam);
             coord.y = HIWORD(lParam);
+            cnt=0;
+            if (nrObj>0)
+            {
+                for(int i = 0; i<nrObj; i++)
+                {
+                    if(abs(coord.x-objs[i]->center.x)<52)
+                    {
+                        cnt+=1;
+                    }
+                }
+                if(cnt==0)
+                {
+                    objs[nrObj] = new Circle(coord,2 + coord.x%5);
+                    objs[nrObj] -> Color(RGB(coord.x%200, coord.x%150+coord.y%100, coord.y%200));
 
-            objs[nrObj] = new Circle(coord,2 + coord.x%5);
-            objs[nrObj] -> Color(RGB(coord.x%255, coord.x%125+coord.y%125, coord.y%255));
+                    nrObj++;
+                }
+            }
+            else
+            {
+                objs[nrObj] = new Circle(coord,2 + coord.x%5);
+                objs[nrObj] -> Color(RGB(coord.x%200, coord.x%150+coord.y%100, coord.y%200));
 
-            nrObj++;
+                nrObj++;
+            }
         break;
         }
 
