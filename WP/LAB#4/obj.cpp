@@ -1,6 +1,6 @@
 #include "obj.h"
 
-Objects::Objects(POINT center, const int &speed)
+objs::objs(POINT center, const int &speed)
  {
 
     this -> center = center;
@@ -10,19 +10,19 @@ Objects::Objects(POINT center, const int &speed)
 
 }
 
-bool Objects::Accelerate(const int& dX, const int& dY)
+bool objs::Accelerate(const int& dX, const int& dY)
 {
     xSpeed = dX;
     ySpeed = dY;
     return TRUE;
 }
 
-bool Objects::Color(const COLORREF &clr)
+bool objs::Color(const COLORREF &clr)
 {
     this -> clr = clr;
     return TRUE;
 }
-bool Objects::Shape(Objects &ob)
+bool objs::Shape(objs &ob)
 {
 
     return TRUE;
@@ -52,7 +52,7 @@ bool Circle::Move(const HDC &hdc, const RECT& rect, HBRUSH &hBrush)
 
 }
 
-bool Objects::Collision(const RECT &rect)
+bool objs::Collision(const RECT &rect)
 {
     if(center.x+25 > rect.right-1)
     {
@@ -75,22 +75,18 @@ bool Objects::Collision(const RECT &rect)
     return TRUE;
 }
 
-bool Interaction(Objects &alfa, Objects &beta) {
+bool Interaction(objs &obj1, objs &obj2) {
 
     float distance;
-    POINT totalSpeed;
 
-    distance = sqrt( pow(alfa.center.x-beta.center.x,2) + pow(alfa.center.y-beta.center.y,2) );
+    distance = sqrt( pow(obj1.center.x-obj2.center.x,2) + pow(obj1.center.y-obj2.center.y,2) );
 
     if ( distance < 53 )
     {
-    totalSpeed.x = (abs(alfa.xSpeed) + abs(beta.xSpeed))/2;
-    totalSpeed.y = (abs(alfa.ySpeed) + abs(beta.ySpeed))/2;
+    obj1.Accelerate(-obj1.xSpeed, -obj1.ySpeed);
+    obj2.Accelerate(-obj2.xSpeed, -obj2.ySpeed);
 
-    alfa.Accelerate(-alfa.xSpeed*totalSpeed.x/abs(alfa.xSpeed), -alfa.ySpeed*totalSpeed.y/abs(alfa.ySpeed));
-    beta.Accelerate(-beta.xSpeed*totalSpeed.x/abs(beta.xSpeed), -beta.ySpeed*totalSpeed.y/abs(beta.ySpeed));
-
-    alfa.Color(RGB(255,0,0));
+    obj1.Color(RGB(255,0,0));
     }
 
     return TRUE;

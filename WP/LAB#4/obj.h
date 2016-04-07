@@ -1,5 +1,5 @@
-#ifndef _Objects.h_
-#define _Objects.h_
+#ifndef _objs.h_
+#define _objs.h_
 
 #include <iostream>
 #include <windows.h>
@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class Objects
+class objs
 {
 
 protected:
@@ -18,22 +18,22 @@ public:
     int xSpeed,ySpeed;
     int counter=0;
 
-    Objects(POINT center,const int &speed);
+    objs(POINT center,const int &speed);
     bool Accelerate(const int& deltaSpeedX, const int& deltaSpeedY);
     bool Color(const COLORREF &clr);
     bool Collision(const RECT &rect);
-    bool Shape(Objects &ob);
+    bool Shape(objs &ob);
     virtual bool Move(const HDC &hdc, const RECT& rect,HBRUSH &hBrush) = 0;
 };
 
-class Circle : public Objects {
+class Circle : public objs {
 public:
-    Circle(POINT center,const int &speed): Objects(center,speed)
+    Circle(POINT center,const int &speed): objs(center,speed)
     {
 
     }
     bool Move(const HDC &hdc,const RECT& rect,HBRUSH &hBrush);
 };
 
-bool Interaction(Objects &alfa,Objects &beta);
+bool Interaction(objs &alfa,objs &beta);
 #endif

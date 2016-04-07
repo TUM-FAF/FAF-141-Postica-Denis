@@ -2,8 +2,8 @@
 
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
-static Objects *objects[100];
-char szClassName[ ] = "CodeBlocksWindowsApp";
+static objs *objs[50];
+char szClassName[ ] = "WindowsApp";
 
 int WINAPI WinMain (HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow)
 {
@@ -24,16 +24,16 @@ int WINAPI WinMain (HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpsz
     wincl.cbClsExtra = 0;
     wincl.cbWndExtra = 0;
 
-    wincl.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
-
+    wincl.hbrBackground =NULL;
+COLORREF clr;
     if (!RegisterClassEx (&wincl))
         return 0;
 
     hwnd = CreateWindowEx (
            0,
            szClassName,
-           "Lab#4: Animation",
-           WS_OVERLAPPEDWINDOW,
+           "CrazyBubbles",
+           WS_OVERLAPPEDWINDOW|WS_CLIPCHILDREN,
            CW_USEDEFAULT,
            CW_USEDEFAULT,
            800,
@@ -75,26 +75,14 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
           hdc = GetDC(hwnd);
           GetClientRect(hwnd,&rect);
 
-          hdcMem = CreateCompatibleDC(hdc);
-          hbmMem = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
-          hOld = SelectObject(hdcMem,hbmMem);
-
           SetTimer(hwnd, ID_TIMER, timerSpeed, NULL);
         break;
         }
 
         case WM_SIZE:
         {
-            SelectObject(hdcMem, hOld);
-            DeleteObject(hbmMem);
-            DeleteDC(hdcMem);
-
             hdc = GetDC(hwnd);
             GetClientRect(hwnd, &rect);
-
-            hdcMem = CreateCompatibleDC(hdc);
-            hbmMem = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
-            hOld = SelectObject(hdcMem, hbmMem);
         break;
         }
 
@@ -104,8 +92,8 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             coord.x = LOWORD(lParam);
             coord.y = HIWORD(lParam);
 
-            objects[nrObj] = new Circle(coord,2 + coord.x%5);
-            objects[nrObj] -> Color(RGB(coord.x%255, coord.x%125+coord.y%125, coord.y%255));
+            objs[nrObj] = new Circle(coord,2 + coord.x%5);
+            objs[nrObj] -> Color(RGB(coord.x%255, coord.x%125+coord.y%125, coord.y%255));
 
             nrObj++;
         break;
@@ -165,11 +153,15 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             hdc = BeginPaint(hwnd,&ps);
             GetClientRect(hwnd,&rect);
 
+            hdcMem = CreateCompatibleDC(hdc);
+            hbmMem = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
+            hOld = SelectObject(hdcMem, hbmMem);
+
             for(int i = 0; i<nrObj-1; i++)
             {
                 for(int j = i+1; j < nrObj; j++)
                 {
-                    Interaction(*objects[i],*objects[j]);
+                    Interaction(*objs[i],*objs[j]);
                 }
             }
 
@@ -177,15 +169,23 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
             for(int i = 0; i < nrObj; i++)
             {
-                objects[i] -> Move(hdcMem, rect, hBrush);
+                objs[i] -> Move(hdcMem, rect, hBrush);
             }
 
             BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdcMem, 0, 0, SRCCOPY);
+
+            SelectObject(hdcMem,hOld);
+            DeleteObject(hbmMem);
+            DeleteDC(hdcMem);
 
             EndPaint(hwnd,&ps);
 
         break;
         }
+
+        case WM_ERASEBKGND:
+            return 1;
+        break;
 
         case WM_TIMER:
         {
@@ -195,9 +195,6 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
         case WM_DESTROY:
         {
-            SelectObject(hdcMem,hOld);
-            DeleteObject(hbmMem);
-            DeleteDC(hdcMem);
             KillTimer(hwnd,ID_TIMER);
 
             PostQuitMessage (0);
