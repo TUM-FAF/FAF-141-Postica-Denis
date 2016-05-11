@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Simple Pomodoro</string>
+    <string name="task_name">Set task name</string>
+    <string name="timer">00:00</string>
+    <string name="settings">Settings</string>
+</resources>

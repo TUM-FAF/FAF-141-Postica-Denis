@@ -54,7 +54,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     wincl.cbClsExtra = 0;
     wincl.cbWndExtra = 0;
 
-    wincl.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(150,150,200));;
+    wincl.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(150,150,200));
 
     if (!RegisterClassEx (&wincl))
         return 0;

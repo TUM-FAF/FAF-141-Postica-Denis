@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="lab3" />
+		<Option title="LAB#4" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Release">
-				<Option output="bin/Release/lab3" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/LAB#4" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
@@ -28,19 +28,9 @@
 			<Add library="kernel32" />
 			<Add library="comctl32" />
 		</Linker>
-		<Unit filename="bezier.bmp" />
-		<Unit filename="ellipse.bmp" />
-		<Unit filename="eraser.bmp" />
-		<Unit filename="icon.ico" />
-		<Unit filename="lab3.cpp" />
-		<Unit filename="line.bmp" />
-		<Unit filename="pencil.bmp" />
-		<Unit filename="rectangle.bmp" />
-		<Unit filename="resource.h" />
-		<Unit filename="resource.rc">
-			<Option compilerVar="WINDRES" />
-		</Unit>
-		<Unit filename="traffic.bmp" />
+		<Unit filename="lab#4.cpp" />
+		<Unit filename="obj.cpp" />
+		<Unit filename="obj.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

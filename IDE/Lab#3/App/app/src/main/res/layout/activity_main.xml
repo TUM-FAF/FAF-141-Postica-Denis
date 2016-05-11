@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center|top"
+    tools:context="com.example.dennis.app.MainActivity"
+    android:weightSum="1">
+    <LinearLayout
+        android:background="@color/gray"
+        android:layout_width="match_parent"
+        android:gravity="right"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background = "@drawable/settings"
+            android:textColor="@color/white"
+            android:id="@+id/menu_settings"
+            android:onClick="getSetting"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/gray"
+        android:id="@+id/ll1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1"
+        android:paddingTop="40dp"
+        android:orientation="vertical"
+        android:gravity="center|bottom">
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:hint="@string/task_name"
+            android:cursorVisible="false"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:id="@+id/taskname"
+            android:background="@android:color/transparent"
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/gray"
+        android:id="@+id/ll2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="0.8">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timer"
+            android:textColor="@color/white"
+            android:id="@+id/timer"
+            android:textSize="100dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/gray"
+        android:id="@+id/ll3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1"
+        android:gravity="center|top">
+
+        <Button
+            android:background = "@drawable/stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bstop"
+            android:visibility="gone"
+            android:onClick="stop_pressed"/>
+
+        <Button
+            android:background = "@drawable/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bstart"
+            android:visibility="visible"
+            android:onClick="start_pressed"/>
+
+        <Button
+            android:background = "@drawable/skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bskip"
+            android:visibility="gone"
+            android:onClick="skip_pressed"/>
+        </LinearLayout>
+
+</LinearLayout>
