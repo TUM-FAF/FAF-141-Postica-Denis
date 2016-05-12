@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Simple Pomodoro</string>
+    <string name="timer">00:00</string>
+    <string name="settings">Setări</string>
+    <string name="general">General</string>
+    <string name="work_session_duration">Durata sesiunii de lucru</string>
+    <string name="break_duration">Durata pauzei</string>
+    <string name="long_break_duration">Durata pauzei lungi</string>
+    <string name="work_sessions">Sesiuni de lucru</string>
+    <string name="disable_notifications">Dezactivează notificațiile</string>
+    <string name="save">Salvează</string>
+    <string name="ok">OK</string>
+    <string name="working">Lucrez</string>
+    <string name="thebreak">Pauză</string>
+    <string name="recreation">Odihnește-te</string>
+    <string name="r_message">A sosit momentul odihnei!</string>
+    <string name="work">Lucrul</string>
+    <string name="w_message">Trebuie să începi lucrul!</string>
+    <string name="toast_memoryshort">Datele au fost salvate</string>
+    <string name="l_break">Pauza lungă</string>
+</resources>

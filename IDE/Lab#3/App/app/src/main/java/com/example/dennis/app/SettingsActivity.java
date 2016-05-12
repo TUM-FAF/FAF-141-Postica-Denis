@@ -21,16 +21,20 @@ public class SettingsActivity extends AppCompatActivity {
     private EditText wsession_duration,break_duration,lbreak_duration,work_sessions;
     private CheckBox disable;
     private Button close;
-    static boolean d;
+    private CheckBox d;
+    private boolean ans;
     public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String wd="work session duration",bd="break duration",lbd="long break duration",ws="work sessions";
+    public static final String wd="work session duration",bd="break duration",lbd="long break duration",ws="work sessions",dn="notifications";
     static SharedPreferences sharedpreferences;
     static String wduration,bduration,lbduration,wsessions;
+    private Intent intent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        intent = new Intent(SettingsActivity.this, MainActivity.class);
 
         wsession_duration=(EditText)findViewById(R.id.wsession_duration);
         break_duration=(EditText)findViewById(R.id.break_duration);
@@ -44,10 +48,18 @@ public class SettingsActivity extends AppCompatActivity {
         break_duration=(EditText)findViewById(R.id.break_duration);
         lbreak_duration=(EditText)findViewById(R.id.lbreak_duration);
         work_sessions=(EditText)findViewById(R.id.work_sessions);
+        d = (CheckBox)findViewById(R.id.disable_notifications);
         wduration = sharedpreferences.getString(wd, "25");
         bduration=sharedpreferences.getString(bd, "5");
         lbduration=sharedpreferences.getString(lbd, "15");
         wsessions=sharedpreferences.getString(ws,"4");
+        ans=Boolean.parseBoolean(sharedpreferences.getString(dn,"false"));
+        if(ans==false){
+            disable.setChecked(false);
+        }
+        else {
+            disable.setChecked(true);
+        }
         wsession_duration.setText(wduration);
         break_duration.setText(bduration);
         lbreak_duration.setText(lbduration);
@@ -77,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static boolean getDisable(){
 
-            return d;
+            return Boolean.parseBoolean(sharedpreferences.getString(dn,"false"));
     }
 
     public void save_data(View view) {
@@ -86,16 +98,23 @@ public class SettingsActivity extends AppCompatActivity {
         String b = break_duration.getText().toString();
         String c = lbreak_duration.getText().toString();
         String d = work_sessions.getText().toString();
+        String e;
+        if (disable.isChecked()){
+            e="true";
+        }
+        else{
+            e="false";
+        }
         editor.putString(wd, a);
         editor.putString(bd, b);
         editor.putString(lbd,c);
         editor.putString(ws, d);
+        editor.putString(dn, e);
         editor.commit();
-        Toast.makeText(SettingsActivity.this,"Values saved successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(SettingsActivity.this, R.string.toast_memoryshort, Toast.LENGTH_SHORT).show();
     }
 
     public void close_settings(View view) {
-        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
         startActivity(intent);
     }
 }

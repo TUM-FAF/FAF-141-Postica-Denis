@@ -1,6 +1,21 @@
 <resources>
     <string name="app_name">Simple Pomodoro</string>
-    <string name="task_name">Set task name</string>
     <string name="timer">00:00</string>
     <string name="settings">Settings</string>
+    <string name="general">General</string>
+    <string name="work_session_duration">Work session duration</string>
+    <string name="break_duration">Break duration</string>
+    <string name="long_break_duration">Long break duration</string>
+    <string name="work_sessions">Work sessions</string>
+    <string name="disable_notifications">Disable notifications</string>
+    <string name="save">Save</string>
+    <string name="ok">OK</string>
+    <string name="working">Working</string>
+    <string name="thebreak">Break</string>
+    <string name="recreation">Recreation</string>
+    <string name="r_message">Time has come to rest!</string>
+    <string name="work">Working</string>
+    <string name="w_message">Brace youreself, work is comming!</string>
+    <string name="toast_memoryshort">Values saved successfully</string>
+    <string name="l_break">Long break</string>
 </resources>

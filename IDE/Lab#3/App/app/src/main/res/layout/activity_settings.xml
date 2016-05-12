@@ -6,7 +6,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="General"
+        android:text="@string/general"
         android:textColor="@color/gray"
         android:textAlignment="center"
         android:textSize="22dp"/>
@@ -21,7 +21,7 @@
             android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Work session duration"
+            android:text="@string/work_session_duration"
             android:paddingLeft="5dp"
             android:textSize="20dp"/>
         <EditText
@@ -48,7 +48,7 @@
             android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Break duration"
+            android:text="@string/break_duration"
             android:paddingLeft="5dp"
             android:textSize="20dp"/>
         <EditText
@@ -74,7 +74,7 @@
             android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Long break duration"
+            android:text="@string/long_break_duration"
             android:paddingLeft="5dp"
             android:textSize="20dp" />
         <EditText
@@ -100,7 +100,7 @@
             android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Work sessions"
+            android:text="@string/work_sessions"
             android:paddingLeft="5dp"
             android:textSize="20dp"
             />
@@ -125,7 +125,7 @@
             android:textColor="@color/gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Disable notifications"
+            android:text="@string/disable_notifications"
             android:gravity="center"
             android:paddingLeft="5dp"
             android:textSize="20dp"/>
@@ -148,7 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:text="Save"
+            android:text="@string/save"
             android:textSize="20dp"
             android:gravity="center"
             android:background="@android:color/transparent"
@@ -161,7 +161,7 @@
             android:layout_gravity="right"
             android:gravity="center"
             android:background="@android:color/transparent"
-            android:text="OK"
+            android:text="@string/ok"
             android:textSize="20dp"
             android:id="@+id/close_button"
             android:onClick="close_settings"/>

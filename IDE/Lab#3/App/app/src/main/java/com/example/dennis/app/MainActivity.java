@@ -1,21 +1,22 @@
 package com.example.dennis.app;
 
-import android.content.Context;
+import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.support.v7.app.NotificationCompat;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import android.os.Handler;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText tempTextView;
     private Handler mHandler = new Handler();
     private long startTime;
     private long elapsedTime;
@@ -25,12 +26,12 @@ public class MainActivity extends AppCompatActivity {
     private int working_periods = 0;
     private int resting_periods = 0;
     private boolean working = true;
+    private boolean notification;
     private boolean stopped = false;
     private long work_session,break_session,lbreak_session,working_sessions;
-    public static final String MyPREFERENCE = "MyPref" ;
-    public static final String setc="settings called";
-    static SharedPreferences sharedpreferences;
-    static boolean set_called=false;
+    private static boolean set_called=false;
+    private TextView action;
+    private Intent intent;
     private Runnable startTimer = new Runnable() {
         public void run() {
             elapsedTime = System.currentTimeMillis() - startTime;
@@ -45,10 +46,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkScreenDensity();
+        action = (TextView)findViewById(R.id.taskname);
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCE, Context.MODE_PRIVATE);
-        set_called=Boolean.parseBoolean(sharedpreferences.getString(setc,"false"));
+         intent = new Intent(MainActivity.this, SettingsActivity.class);
     }
 
     public void stop_pressed(View view) {
@@ -63,9 +63,12 @@ public class MainActivity extends AppCompatActivity {
         stopped = false;
         if (working == true){
             working_periods+=1;
+
+            action.setText(R.string.thebreak);
         }
         else {
             resting_periods+=1;
+            action.setText(R.string.working);
         }
         working = !working;
         ((TextView) findViewById(R.id.timer)).setText("00:00");
@@ -78,11 +81,14 @@ public class MainActivity extends AppCompatActivity {
             break_session = 5;
             lbreak_session = 15;
             work_session = 4;
+            notification = true;
         } else {
             work_session=SettingsActivity.getWsession_duration();
             break_session = SettingsActivity.getBreak_duration();
             lbreak_session = SettingsActivity.getLbreak_duration();
             working_sessions = SettingsActivity.getWork_sessions();
+            notification = SettingsActivity.getDisable();
+
         }
         if (stopped) {
             startTime = System.currentTimeMillis() - elapsedTime;
@@ -101,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideButtons() {
         ((Button) findViewById(R.id.bstart)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.bskip)).setVisibility(View.GONE);
+        ((Button) findViewById(R.id.bskip)).setVisibility(View.VISIBLE);
         ((Button) findViewById(R.id.bstop)).setVisibility(View.GONE);
     }
 
@@ -127,26 +133,19 @@ public class MainActivity extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.timer)).setText( minutes + ":" + seconds);
     }
-    private void checkScreenDensity() {
-        tempTextView = (EditText) findViewById(R.id.taskname);
-        switch (getResources().getDisplayMetrics().densityDpi) {
-            case DisplayMetrics.DENSITY_LOW:
-                tempTextView.setVisibility(View.GONE);
-                break;
-            case DisplayMetrics.DENSITY_MEDIUM:
-                tempTextView.setVisibility(View.GONE);
-                break;
-            case DisplayMetrics.DENSITY_HIGH:
-                tempTextView.setVisibility(View.VISIBLE);
-                break;
-        }
-    }
 
     private void checkMode(){
 
         if (mins == (work_session-1) && secs == 59 && working == true && working_periods<working_sessions) {
             working_periods += 1;
             working = false;
+            breakNotification();
+            if (working_periods == working_sessions){
+                action.setText(R.string.l_break);
+            }
+            else {
+                action.setText(R.string.thebreak);
+            }
             startTime = System.currentTimeMillis();
             mHandler.removeCallbacks(startTimer);
             mHandler.postDelayed(startTimer, 0);
@@ -154,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
         if (mins == (break_session-1) && secs == 59 && working == false && resting_periods<(working_sessions-1)) {
             resting_periods += 1;
             working = true;
+            workNotification();
+            action.setText(R.string.working);
             startTime = System.currentTimeMillis();
             mHandler.removeCallbacks(startTimer);
             mHandler.postDelayed(startTimer, 0);
@@ -169,10 +170,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getSetting(View view) {
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString(setc,"true");
-        editor.commit();
-        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        set_called=true;
         startActivity(intent);
     }
+
+    public void breakNotification(){
+        if (notification==true){
+            return;
+        }
+        else {
+            Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+            PendingIntent notifyPIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+
+            NotificationCompat.Builder nb = new NotificationCompat.Builder(this);
+            nb.setSmallIcon(R.drawable.ic_launcher);
+            nb.setSound(sound);
+            nb.setContentTitle(getResources().getString(R.string.recreation));
+            nb.setContentText(getResources().getString(R.string.r_message));
+            nb.setContentIntent(notifyPIntent);
+
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.notify(100, nb.build());
+        }
+    }
+
+    public void workNotification(){
+        if (notification == true){
+            return;
+        }
+        else {
+            Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+            PendingIntent notifyPIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+
+            NotificationCompat.Builder nb = new NotificationCompat.Builder(this);
+            nb.setSmallIcon(R.drawable.ic_launcher);
+            nb.setSound(sound);
+            nb.setContentTitle(getResources().getString(R.string.work));
+            nb.setContentText(getResources().getString(R.string.w_message));
+            nb.setContentIntent(notifyPIntent);
+
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.notify(100, nb.build());
+        }
+    }
 }
+

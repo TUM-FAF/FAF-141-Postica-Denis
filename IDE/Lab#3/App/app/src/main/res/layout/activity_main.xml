@@ -7,10 +7,9 @@
     android:gravity="center|top"
     tools:context="com.example.dennis.app.MainActivity"
     android:weightSum="1">
-    <LinearLayout
+    <RelativeLayout
         android:background="@color/gray"
         android:layout_width="match_parent"
-        android:gravity="right"
         android:layout_height="wrap_content">
         <Button
             android:layout_width="50dp"
@@ -18,8 +17,9 @@
             android:background = "@drawable/settings"
             android:textColor="@color/white"
             android:id="@+id/menu_settings"
-            android:onClick="getSetting"/>
-    </LinearLayout>
+            android:onClick="getSetting"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:background="@color/gray"
@@ -30,13 +30,13 @@
         android:paddingTop="40dp"
         android:orientation="vertical"
         android:gravity="center|bottom">
-        <EditText
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:hint="@string/task_name"
             android:cursorVisible="false"
-            android:textColorHint="@color/white"
+            android:text="@string/working"
+            android:textSize="20dp"
             android:textColor="@color/white"
             android:id="@+id/taskname"
             android:background="@android:color/transparent"
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/bskip"
-            android:visibility="gone"
+            android:visibility="visible"
             android:onClick="skip_pressed"/>
         </LinearLayout>
 
