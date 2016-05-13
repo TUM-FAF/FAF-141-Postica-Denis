@@ -3,9 +3,13 @@ package com.example.dennis.app;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
@@ -26,12 +30,13 @@ public class MainActivity extends AppCompatActivity {
     private int working_periods = 0;
     private int resting_periods = 0;
     private boolean working = true;
-    private boolean notification;
+    public static boolean notification;
     private boolean stopped = false;
-    private long work_session,break_session,lbreak_session,working_sessions;
-    private static boolean set_called=false;
+    public static long work_session,break_session,lbreak_session,working_sessions;
     private TextView action;
     private Intent intent;
+    public static final String wd="work session duration",bd="break duration",lbd="long break duration",ws="work sessions",dn="notifications";
+
     private Runnable startTimer = new Runnable() {
         public void run() {
             elapsedTime = System.currentTimeMillis() - startTime;
@@ -48,7 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
         action = (TextView)findViewById(R.id.taskname);
 
-         intent = new Intent(MainActivity.this, SettingsActivity.class);
+        intent = new Intent(MainActivity.this, SettingsActivity.class);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setContentView(R.layout.activity_main);
     }
 
     public void stop_pressed(View view) {
@@ -61,35 +72,13 @@ public class MainActivity extends AppCompatActivity {
         hideButtons();
         mHandler.removeCallbacks(startTimer);
         stopped = false;
-        if (working == true){
-            working_periods+=1;
-
-            action.setText(R.string.thebreak);
-        }
-        else {
-            resting_periods+=1;
-            action.setText(R.string.working);
-        }
         working = !working;
         ((TextView) findViewById(R.id.timer)).setText("00:00");
     }
 
     public void start_pressed(View view) {
+        LoadPreferences();
         showButtons();
-        if (set_called == false) {
-            work_session = 24;
-            break_session = 5;
-            lbreak_session = 15;
-            work_session = 4;
-            notification = true;
-        } else {
-            work_session=SettingsActivity.getWsession_duration();
-            break_session = SettingsActivity.getBreak_duration();
-            lbreak_session = SettingsActivity.getLbreak_duration();
-            working_sessions = SettingsActivity.getWork_sessions();
-            notification = SettingsActivity.getDisable();
-
-        }
         if (stopped) {
             startTime = System.currentTimeMillis() - elapsedTime;
         } else {
@@ -140,12 +129,7 @@ public class MainActivity extends AppCompatActivity {
             working_periods += 1;
             working = false;
             breakNotification();
-            if (working_periods == working_sessions){
-                action.setText(R.string.l_break);
-            }
-            else {
-                action.setText(R.string.thebreak);
-            }
+            action.setText(R.string.thebreak);
             startTime = System.currentTimeMillis();
             mHandler.removeCallbacks(startTimer);
             mHandler.postDelayed(startTimer, 0);
@@ -159,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
             mHandler.removeCallbacks(startTimer);
             mHandler.postDelayed(startTimer, 0);
         }
+        if(working_periods==working_sessions){
+            action.setText(R.string.l_break);
+        }
         if (mins == (lbreak_session-1) && secs == 59 && working == false && working_periods>=working_sessions) {
             working_periods = 0;
             resting_periods = 0;
@@ -170,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getSetting(View view) {
-        set_called=true;
         startActivity(intent);
     }
 
@@ -214,6 +200,19 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nm.notify(100, nb.build());
         }
+    }
+
+    private void LoadPreferences(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        work_session=Long.parseLong(sharedPreferences.getString(wd, "25"));
+        break_session = Long.parseLong(sharedPreferences.getString(bd, "5"));
+        lbreak_session = Long.parseLong(sharedPreferences.getString(lbd, "15"));
+        working_sessions = Long.parseLong(sharedPreferences.getString(ws,"4"));
+        notification = Boolean.parseBoolean(sharedPreferences.getString(dn,"false"));
+    }
+
+    public void close_app(View view) {
+        finish();
     }
 }
 
