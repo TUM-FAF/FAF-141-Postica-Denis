@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+		<ul>
+			<li><a href="/articles/all">Articles</a></li>
+			<li><a href="/accounts/profile">Profile</a></li>
+			<li><a href="/home/">Home</a></li>
+		</ul>
+{% endblock %}
+
+{% block content %}
+	
+	<h2>Hi {{full_name}}, you're logged in!</h2>
+	<p> Click <a href="/accounts/logout/">here</a> to logout.</p>
+
+	<p> Click <a href="/accounts/profile/">here</a> to change profile information</p>
+{% endblock %}

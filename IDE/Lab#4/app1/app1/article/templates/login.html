@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+		<ul>
+			<li><a href="/articles/all">Articles</a></li>
+			<li><a href="/accounts/register/">Register</a></li>
+			<li><a href="/home/">Home</a></li>
+		</ul>
+		{% endblock %}
+
+{% block content %}
+
+	{% if form.errors %}
+		<p class="error"> Sorry, that's not a valid username or password</p>
+	{% endif %}
+
+	<form action="/accounts/auth/" method="post">{% csrf_token %}
+	<label for="username">User name:</label>
+	<input type="text" name="username" value="" id="username">
+	<label for="password">Password:</label>
+	<input type="password" name="password" value="" id="password">
+
+	<input type="submit" value="login"/>
+	</form>
+{% endblock %}
