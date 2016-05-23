@@ -11,12 +11,11 @@
 <h1>{{article.title}}</h1>
 <p>{{article.body}}</p>
 {% if article.thumbnail %}
-	{% if ".jpeg" in article.thumbnail.str%}
-	<p><img src="/{{article.thumbnail}}" width="200"/></p>
-	}
-	{% else %}
-	<p>Invalid file extension</p>
-	{% endif %}
+		{% if ".jpg" in article.get_str_th %}
+			<p><img src="/{{article.thumbnail}}" width="200"/></p>
+		{% else %}
+			<p>Invalid image format/p>
+		{% endif %}
 {% endif %}
 <p>{{article.likes}} people liked this article</a></p>
 <p><a href="/articles/like/{{article.id}}">Like</a></p>
